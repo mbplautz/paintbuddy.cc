@@ -1,6 +1,6 @@
 <template>
     <div :class="name" @click="click()">
-        <div class="toolbar-button">
+        <div :class="['toolbar-button', selected ? 'selected-item' : '']">
             <i :class="icon"></i>
         </div>
     </div>
