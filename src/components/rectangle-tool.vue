@@ -20,6 +20,15 @@ import EditTool from './edit-tool.vue';
         methods: {
             select() {
                 console.log('Rectangle Tool clicked');
+            },
+            touchFunction(e) {
+
+            },
+            dragFunction(e) {
+
+            },
+            releaseFunction(e) {
+                
             }
         }
     }

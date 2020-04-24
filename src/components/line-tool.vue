@@ -20,6 +20,15 @@ import EditTool from './edit-tool.vue';
         methods: {
             select() {
                 console.log('Line Tool clicked');
+            },
+            touchFunction(e) {
+
+            },
+            dragFunction(e) {
+
+            },
+            releaseFunction(e) {
+                
             }
         }
     }
