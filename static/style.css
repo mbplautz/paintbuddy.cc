@@ -1,22 +1,108 @@
-html, body {
+body {
     width: 100%;
     height: 100%;
-    background: #eee;
 }
 
-div.square {
-    width: 100px;
-    height: 100px;
+div.toolbar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    /* width: 100px; */
+    background-color: #eee;
+    border-right: 1px solid #888;
+    overflow: hidden;
 }
 
-div.square i.fas {
-    font-size: 100px;
+div.canvas {
+    height: 100%;
+    /* width: calc(100% - 100px); */
+    position: absolute;
+    right: 0;
+    top: 0;
+    overflow: hidden;
 }
 
-div.square.selected-item {
-    background-color: #cee9fe;
+@media only screen and (min-width: 800px) {
+    div.toolbar {
+        width: 100px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 99px);
+    }
+
+    div.toolbar-button {
+        width: 100px;
+        height: 100px;
+        font-size: 72px;
+        padding-left: 14px;
+    }
+
+    div.toolbar-separator {
+        width: 100px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 8px;
+        margin-bottom: 7px;
+    }
+}
+
+@media only screen and (min-width: 400px) and (max-width: 799px) {
+    div.toolbar {
+        width: 64px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 63px);
+    }
+
+    div.toolbar-button {
+        width: 64px;
+        height: 64px;
+        font-size: 48px;
+        padding-left: 8px;
+    }
+
+    div.toolbar-separator {
+        width: 64px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+}
+
+@media only screen and (max-width: 399px) {
+    div.toolbar {
+        width: 32px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 31px);
+    }
+
+    div.toolbar-button {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        padding-left: 4px;
+    }
+
+    div.toolbar-separator {
+        width: 32px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 4px;
+        margin-bottom: 3px;
+    }
 }
 
 #app {
-    margin: 2em 2em 2em 2em;
+    width: 100%;
+    height: 100%;
+}
+
+div.toolbar-button.selected-item {
+    background-color: #cee9fe;
 }

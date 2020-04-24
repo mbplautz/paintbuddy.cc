@@ -1,19 +1,18 @@
 <template>
     <div id="app">
-        <h1>Welcome to PaintBuddy.cc</h1>
-        <button-one buttonGroup="Group1"/>
-        <button-two buttonGroup="Group1"/>
+        <paint-toolbar />
+        <paint-canvas />
     </div>
 </template>
 
 <script>
-import ButtonOne from './components/button-one.vue';
-import ButtonTwo from './components/button-two.vue';
+import PaintToolbar from './components/paint-toolbar.vue';
+import PaintCanvas from './components/paint-canvas.vue';
 
 export default {
     components: {
-        ButtonOne,
-        ButtonTwo
+        PaintToolbar,
+        PaintCanvas
     }
 }
 </script>

@@ -1,34 +1,29 @@
-<template>
-    <div :class="name">
-        <div class="square" @click="selectParent()">
-            <i :class="icon"></i>
-        </div>
-    </div>
-</template>
 <script>
     import $ from 'jquery';
+    import ToolbarButton from './toolbar-button.vue';
 
     export default {
         data() {
             return {
-                icon: 'fas fa-radiation',
+                icon: '',
                 selected: false
             }
         },
+        extends: ToolbarButton,
         mounted() {
             this.$root.$on('deselect', this.deselect);
         },
         methods: {
-            selectParent() {
+            click() {
                 this.$root.$emit('deselect', this.buttonGroup)
-                $(`div.${this.name} div.square`).addClass('selected-item');
-                console.log(`${this.name} has been selected`);
+                $(`div.${this.name} div.toolbar-button`).addClass('selected-item');
+                this.selected = true;
                 this.select();
             },
             deselect(buttonGroup) {
                 if (buttonGroup === this.buttonGroup) {
                      this.selected = false;
-                     $(`div.${this.name} div.square`).removeClass('selected-item');
+                     $(`div.${this.name} div.toolbar-button`).removeClass('selected-item');
                      console.log(`${this.name} has been deselected`);
                 }
             }

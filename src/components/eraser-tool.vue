@@ -1,5 +1,6 @@
 <script>
-import ParentComponent from './parent-component.vue';
+import EditTool from './edit-tool.vue';
+
     export default {
         props: {
             buttonGroup: {
@@ -11,18 +12,14 @@ import ParentComponent from './parent-component.vue';
         },
         data() {
             return {
-                name: 'Button2',
-                icon: 'fas fa-anchor'
+                name: 'Eraser',
+                icon: 'fas fa-eraser'
             }
         },
-        // mixins: [
-        //     ParentComponent
-        // ],
-        extends: ParentComponent,
+        extends: EditTool,
         methods: {
             select() {
-                // ParentComponent.methods.select.call(this);
-                console.log('Button2 sub-component clicked');
+                console.log('Eraser Tool clicked');
             }
         }
     }
