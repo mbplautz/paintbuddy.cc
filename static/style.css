@@ -1,0 +1,22 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #eee;
+}
+
+div.square {
+    width: 100px;
+    height: 100px;
+}
+
+div.square i.fas {
+    font-size: 100px;
+}
+
+div.square.selected-item {
+    background-color: #cee9fe;
+}
+
+#app {
+    margin: 2em 2em 2em 2em;
+}
