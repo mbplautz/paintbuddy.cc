@@ -22,7 +22,7 @@ export default {
             },
             options: {
                 color: '#000000',
-                lineThickness: 3,
+                lineWidth: 3.0,
                 transparentSelection: true,
                 filledPolygon: false
             },

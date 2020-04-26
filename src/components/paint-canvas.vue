@@ -44,7 +44,7 @@
                 this.$root.paint.canvas.activeElement = activeCanvas;
                 this.$root.paint.canvas.activeContext = activeCanvas.getContext('2d');
                 this.$root.paint.canvas.drawElement = drawCanvas;
-                this.$root.paint.canvas.drawContexgt = drawCanvas.getContext('2d');
+                this.$root.paint.canvas.drawContext = drawCanvas.getContext('2d');
             },
             getDrawCanvas() {
                 return document.querySelector('.draw-canvas');
