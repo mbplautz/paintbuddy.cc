@@ -33,6 +33,8 @@ export default {
                 drawContext: null
             }
         };
+        // Debug
+        window.Vue = this.$root;
     },
     components: {
         PaintToolbar,
