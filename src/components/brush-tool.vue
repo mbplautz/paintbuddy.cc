@@ -22,13 +22,13 @@ import EditTool from './edit-tool.vue';
                 console.log('Brush Tool clicked');
             },
             touchFunction(e) {
-
+                console.log(e);
             },
             dragFunction(e) {
-
+                console.log(e);
             },
             releaseFunction(e) {
-                
+                console.log(e);
             }
         }
     }
