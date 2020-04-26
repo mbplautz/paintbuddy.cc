@@ -43,8 +43,10 @@
                 canvasDiv.appendChild(activeCanvas);
                 this.$root.paint.canvas.activeElement = activeCanvas;
                 this.$root.paint.canvas.activeContext = activeCanvas.getContext('2d');
+                this.$root.paint.canvas.activeContext.lineCap = 'round'; // Set the default upon context creation
                 this.$root.paint.canvas.drawElement = drawCanvas;
                 this.$root.paint.canvas.drawContext = drawCanvas.getContext('2d');
+                this.$root.paint.canvas.drawContext.lineCap = 'round'; // Set the default upon context creation
             },
             getDrawCanvas() {
                 return document.querySelector('.draw-canvas');

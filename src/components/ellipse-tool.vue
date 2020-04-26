@@ -82,6 +82,7 @@ import EditTool from './edit-tool.vue';
                 let radiusY = (currentY - initialY) / 2;
                 let x = initialX + radiusX;
                 let y = initialY + radiusY;
+                // Radii cannot be negative, so I have to flip them if they are
                 if (radiusX < 0) {
                     radiusX = -radiusX;
                     x = currentX + radiusX;
