@@ -24,9 +24,7 @@
         mounted() {
             this.$root.$on('show-popup', (popupElement) => {
                 if (this.name === popupElement.name) {
-                    let rect = popupElement.element.getBoundingClientRect();
-                    this.heightOffset = rect.top;
-                    this.visible = true;
+                    this.show(popupElement.element);
                 }
             });
             this.$root.$on('hide-popup', (popupName) => {
@@ -37,7 +35,9 @@
         },
         methods: {
             show(element) {
-
+                let rect = element.getBoundingClientRect();
+                this.heightOffset = rect.top;
+                this.visible = true;
             },
             hide() {
                 this.visible = false;
