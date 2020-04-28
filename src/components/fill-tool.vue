@@ -16,7 +16,7 @@
         },
         data() {
             return {
-                name: 'Fill',
+                name: 'fill',
                 icon: 'fas fa-fill-drip'
             }
         },

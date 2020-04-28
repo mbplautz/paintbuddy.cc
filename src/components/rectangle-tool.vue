@@ -12,7 +12,7 @@ import EditTool from './edit-tool.vue';
         },
         data() {
             return {
-                name: 'Rectangle',
+                name: 'rectangle',
                 icon: 'far fa-square',
                 mouse: {
                     initialX: 0,

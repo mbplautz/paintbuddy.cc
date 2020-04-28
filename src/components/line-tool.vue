@@ -12,7 +12,7 @@ import EditTool from './edit-tool.vue';
         },
         data() {
             return {
-                name: 'Line',
+                name: 'line',
                 icon: 'fas fa-slash',
                 mouse: {
                     initialX: 0,

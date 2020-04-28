@@ -12,7 +12,7 @@ import EditTool from './edit-tool.vue';
         },
         data() {
             return {
-                name: 'Brush',
+                name: 'brush',
                 icon: 'fas fa-paint-brush',
                 mouse: {
                     lastX: 0,

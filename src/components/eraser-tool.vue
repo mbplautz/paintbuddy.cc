@@ -15,7 +15,7 @@
         },
         data() {
             return {
-                name: 'Eraser',
+                name: 'eraser',
                 icon: 'fas fa-eraser',
                 mouse: {
                     lastX: 0,

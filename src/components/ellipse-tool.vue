@@ -12,7 +12,7 @@ import EditTool from './edit-tool.vue';
         },
         data() {
             return {
-                name: 'Ellipse',
+                name: 'ellipse',
                 icon: 'far fa-circle',
                 mouse: {
                     initialX: 0,

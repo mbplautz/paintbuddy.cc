@@ -89,6 +89,9 @@ export default {
     mounted() {
         this.$root.paint.state.setColor(this.$root.paint.options.color);
         this.$root.paint.state.setLineWidth(this.$root.paint.options.lineWidth);
+        try {
+            document.querySelector('div.brush div.toolbar-button').click();
+        } catch (e) {}
         this.$root.$on('drawing-released', () => {
             if (!!this.$root.paint.state._colorTo) {
                 this.$root.paint.state.setColor(this.$root.paint.state._colorTo);

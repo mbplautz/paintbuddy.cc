@@ -12,7 +12,7 @@ import EditTool from './edit-tool.vue';
         },
         data() {
             return {
-                name: 'Select',
+                name: 'select',
                 icon: 'fas fa-mouse-pointer'
             }
         },
@@ -28,7 +28,7 @@ import EditTool from './edit-tool.vue';
 
             },
             releaseFunction() {
-                
+
             }
         }
     }
