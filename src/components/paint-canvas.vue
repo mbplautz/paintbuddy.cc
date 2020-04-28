@@ -47,6 +47,9 @@
                 this.$root.paint.canvas.drawElement = drawCanvas;
                 this.$root.paint.canvas.drawContext = drawCanvas.getContext('2d');
                 this.$root.paint.canvas.drawContext.lineCap = 'round'; // Set the default upon context creation
+                // This comes from the flood fill algorithm and is a performance enhancement - removing the width reference 
+                // and hardcoding it instead reduces cycles. We set it here, every time the width of the canvas changes
+                this.$root.paint.canvas.getPointOffset = new Function('x', 'y', 'return 4 * (y * ' + clientRect.width + ' + x)');
             },
             getDrawCanvas() {
                 return document.querySelector('.draw-canvas');

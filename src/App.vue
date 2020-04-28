@@ -30,7 +30,8 @@ export default {
                 activeElement: null,
                 activeContext: null,
                 drawElement: null,
-                drawContext: null
+                drawContext: null,
+                getPointOffset: null
             }
         };
         // Debug
