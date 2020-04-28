@@ -12,6 +12,10 @@ import ActionButton from './action-button.vue';
         methods: {
             action() {
                 console.log('Redo clicked');
+                this.$root.paint.state.redo();
+            },
+            isEnabled() {
+                return this.$root.paint.state.canRedo;
             }
         }
     }

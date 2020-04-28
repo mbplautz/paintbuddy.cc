@@ -32,6 +32,7 @@
 
             },
             releaseFunction(e) {
+                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;

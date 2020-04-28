@@ -28,6 +28,7 @@ import EditTool from './edit-tool.vue';
             },
             touchFunction(e) {
                 console.log(e);
+                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousedown') {

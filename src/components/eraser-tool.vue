@@ -30,6 +30,7 @@
                 console.log('Eraser Tool clicked');
             },
             touchFunction(e) {
+                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousedown') {

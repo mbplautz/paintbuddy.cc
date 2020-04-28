@@ -76,8 +76,37 @@ export default {
                         };
                     }
                 },
+                save: () => {
+                    this.$root.paint.state.dirty = true;
+                    let canvas = this.$root.paint.canvas.drawElement;
+                    let savedContext = this.$root.paint.canvas.drawContext.getImageData(0, 0, canvas.width, canvas.height);
+                    this.$root.paint.state._undoStack.push(savedContext);
+                    this.$root.paint.state._redoStack.length = 0;
+                },
+                undo: () => {
+                    // this.$root.paint.canvas.drawContext.restore();
+                    if (this.$root.paint.state._undoStack.length > 0) {
+                        let savedContext = this.$root.paint.state._undoStack.pop();
+                        this.$root.paint.state._redoStack.push(savedContext);
+                        this.$root.paint.canvas.drawContext.putImageData(savedContext, 0, 0);
+                    }
+                    this.$root.paint.state.dirty = this.$root.paint.state._undoStack.length > 0;
+                    this.$root.paint.state.canRedo = true;
+                },
+                redo: () => {
+                    if (this.$root.paint.state._redoStack.length > 0) {
+                        let savedContext = this.$root.paint.state._redoStack.pop();
+                        this.$root.paint.state._undoStack.push(savedContext);
+                        this.$root.paint.canvas.drawContext.putImageData(savedContext, 0, 0);
+                    }
+                    this.$root.paint.state.canRedo = this.$root.paint.state._redoStack.length > 0;
+                    this.$root.paint.state.dirty = true;
+                },
                 drawing: false,
                 dirty: false,
+                canRedo: false,
+                _undoStack: [],
+                _redoStack: [],
                 _colorTo: null,
                 _lineWidthTo: null,
                 _touchFunctionsTo: null

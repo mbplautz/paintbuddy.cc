@@ -12,6 +12,12 @@ import ActionButton from './action-button.vue';
         methods: {
             action() {
                 console.log('Undo clicked');
+                if (this.$root.paint.state.dirty) {
+                    this.$root.paint.state.undo();
+                }
+            },
+            isEnabled() {
+                return this.$root.paint.state.dirty;
             }
         }
     }

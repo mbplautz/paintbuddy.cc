@@ -32,6 +32,7 @@ import EditTool from './edit-tool.vue';
                 console.log('Ellipse Tool clicked');
             },
             touchFunction(e) {
+                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;

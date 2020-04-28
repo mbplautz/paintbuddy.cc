@@ -16,6 +16,10 @@ new Vue({
       options: {
         color: '',
         lineWidth: 0
+      },
+      state: {
+        dirty: false,
+        canRedo: false
       }
     }
   })
