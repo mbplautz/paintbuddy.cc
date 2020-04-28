@@ -1,5 +1,5 @@
 <script>
-import ToolbarButton from './toolbar-button.vue';
+import ActionButton from './action-button.vue';
 
     export default {
         data() {
@@ -8,9 +8,9 @@ import ToolbarButton from './toolbar-button.vue';
                 icon: 'fas fa-undo'
             };
         },
-        extends: ToolbarButton,
+        extends: ActionButton,
         methods: {
-            click() {
+            action() {
                 console.log('Undo clicked');
             }
         }
