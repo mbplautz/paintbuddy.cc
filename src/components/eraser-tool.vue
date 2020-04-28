@@ -99,6 +99,7 @@
                 let canvas = this.$root.paint.canvas.activeElement;
                 let context = this.$root.paint.canvas.activeContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                // Restore drawing canvas' color and line width
                 context = this.$root.paint.canvas.drawContext;
                 context.strokeStyle = this.$root.paint.options.color;
                 context.lineWidth = this.$root.paint.options.lineWidth;
@@ -120,6 +121,7 @@
                 context.ellipse(x, y, options.lineWidth, options.lineWidth, 0, 0, Math.PI * 2);
                 context.stroke();
                 // TODO: Decide if I want to set the stroke at the beginning of each tool or upon selection
+                // UPDATE: Upon selection seems sufficient - this allows me to better take advantage of Vue binding 
                 context.strokeStyle = options.color;
                 context.fillStyle = options.color;
                 context.lineWidth = options.lineWidth;
