@@ -34,7 +34,6 @@
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousedown') {
                     let context = this.$root.paint.canvas.drawContext;
-                    // The next two lines are temporary -- until the initial and user color selection is implemented
                     context.lineWidth = this.$root.paint.options.lineWidth * 2;
                     context.strokeStyle = backgroundColor;
                     let x = e.clientX - bounds.left;
@@ -50,7 +49,6 @@
                 else if (e.type === 'touchstart') {
                     this.touch = {};
                     let context = this.$root.paint.canvas.drawContext;
-                    // The next two lines are temporary -- until the initial and user color selection is implemented
                     context.lineWidth = this.$root.paint.options.lineWidth * 2;
                     context.strokeStyle = backgroundColor;
                     Array.prototype.forEach.call(e.touches, (touch, index) => {
@@ -101,6 +99,9 @@
                 let canvas = this.$root.paint.canvas.activeElement;
                 let context = this.$root.paint.canvas.activeContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                context = this.$root.paint.canvas.drawContext;
+                context.strokeStyle = this.$root.paint.options.color;
+                context.lineWidth = this.$root.paint.options.lineWidth;
             },
             drawTool(x, y, clear = true) {
                 let canvas = this.$root.paint.canvas.activeElement;

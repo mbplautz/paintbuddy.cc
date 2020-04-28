@@ -50,9 +50,6 @@ import EditTool from './edit-tool.vue';
                 }
                 let context = this.$root.paint.canvas.activeContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                // The next two lines are temporary -- until the initial and user color selection is implemented
-                context.lineWidth = this.$root.paint.options.lineWidth;
-                context.strokeStyle = this.$root.paint.options.color;
                 context.beginPath();
                 context.ellipse(x, y, 1, 1, 0, 0, Math.PI * 2);
                 context.stroke();

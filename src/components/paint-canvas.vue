@@ -61,6 +61,7 @@
                 return document.querySelector('div.canvas-child');
             },
             touchFunction(e) {
+                this.$root.paint.state.drawing = true;
                 if (e.type === 'mousedown') {
                     this.mouseDown = true;
                 }
@@ -76,6 +77,8 @@
                     this.mouseDown = false;
                 }
                 this.$root.paint.function.release(e);
+                this.$root.paint.state.drawing = false;
+                this.$root.$emit('drawing-released');
             }
         }
     }

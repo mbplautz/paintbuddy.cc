@@ -32,10 +32,7 @@ import EditTool from './edit-tool.vue';
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousedown') {
                     let context = this.$root.paint.canvas.drawContext;
-                    // The next two lines are temporary -- until the initial and user color selection is implemented
-                    context.lineWidth = this.$root.paint.options.lineWidth;
-                    context.strokeStyle = this.$root.paint.options.color;
-                    let x = e.clientX - bounds.left;
+                   let x = e.clientX - bounds.left;
                     let y = e.clientY - bounds.top;
                     context.beginPath();
                     context.moveTo(x, y);
@@ -47,9 +44,6 @@ import EditTool from './edit-tool.vue';
                 else if (e.type === 'touchstart') {
                     this.touch = {};
                     let context = this.$root.paint.canvas.drawContext;
-                    // The next two lines are temporary -- until the initial and user color selection is implemented
-                    context.lineWidth = this.$root.paint.options.lineWidth;
-                    context.strokeStyle = this.$root.paint.options.color;
                     Array.prototype.forEach.call(e.touches, touch => {
                         let coordinate = {
                             x: touch.clientX - bounds.left,

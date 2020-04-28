@@ -17,7 +17,7 @@
                 return this.$root.paint.options.color === this.color;
             },
             select() {
-                this.$root.paint.options.color = this.color;
+                this.$root.paint.state.setColor(this.color);
                 this.$root.$emit('hide-popup', 'color-menu');
             }
         }

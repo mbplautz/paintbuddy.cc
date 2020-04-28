@@ -33,10 +33,55 @@ export default {
                 drawElement: null,
                 drawContext: null,
                 getPointOffset: null
+            },
+            state: {
+                setColor: (color) => {
+                    if (!this.$root.paint.state.drawing) {
+                        this.$root.paint.state._colorTo = null;
+                        this.$root.paint.options.color = color;
+                        let canvas = this.$root.paint.canvas;
+                        canvas.drawContext.strokeStyle = color;
+                        canvas.drawContext.fillStyle = color;
+                        canvas.activeContext.strokeStyle = color;
+                        canvas.activeContext.fillStyle = color;
+                    }
+                    else {
+                        this.$root.paint.state._colorTo = color;
+                    }
+                },
+                setLineWidth: (lineWidth) => {
+                    if (!this.$root.paint.state.drawing) {
+                        this.$root.paint.state._lineWidthTo = null;
+                        this.$root.paint.options.lineWidth = lineWidth;
+                        let canvas = this.$root.paint.canvas;
+                        canvas.drawContext.lineWidth = lineWidth;
+                        canvas.activeContext.lineWidth = lineWidth;
+                    }
+                    else {
+                        this.$root.paint.state._lineWidthTo = lineWidth;
+                    }
+                },
+                drawing: false,
+                dirty: false,
+                _colorTo: null,
+                _lineWidthTo: null
+                
             }
         };
         // Debug
         window.Vue = this.$root;
+    },
+    mounted() {
+        this.$root.paint.state.setColor(this.$root.paint.options.color);
+        this.$root.paint.state.setLineWidth(this.$root.paint.options.lineWidth);
+        this.$root.$on('drawing-released', () => {
+            if (!!this.$root.paint.state._colorTo) {
+                this.$root.paint.state.setColor(this.$root.paint.state._colorTo);
+            }
+            if (!!this.$root.paint.state._lineWidthTo) {
+                this.$root.paint.state.setLineWidth(this.$root.paint.state._lineWidthTo);
+            }
+        });
     },
     components: {
         PaintToolbar,
