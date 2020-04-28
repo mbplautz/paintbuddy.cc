@@ -23,7 +23,33 @@ div.canvas {
     overflow: hidden;
 }
 
-@media only screen and (min-width: 800px) {
+/* Set toolbar width to respond specifically to the viewport size. This accomplishes two goals:
+ * - a maximum width of the canvas
+ * - the presence of all of the buttons vertically
+ *
+ * This is the view port definition and toolbar width (in px) based on viewport width/height:
+ *
+ *       0         400        800
+ *    0  +----------+-----------+--------------------------------
+ *       |          |           |
+ *       |   32     |     32    |               32
+ *       |          |           |
+ *  800  +----------+-----------+--------------------------------
+ *       |          |           |
+ *       |   32     |    50     |               50
+ *       |          |           |
+ * 1050  +----------+-----------+--------------------------------
+ *       |          |           |
+ *       |   32     |    64     |               64
+ *       |          |           |
+ * 1700  +----------+-----------+--------------------------------
+ *       |          |           |
+ *       |   32     |    64     |              100
+ *       |          |           |
+ *       |          |           |
+ *
+ */
+@media only screen and (min-height: 1700px) and (min-width: 800px) {
     div.toolbar {
         width: 100px;
     }
@@ -48,7 +74,7 @@ div.canvas {
     }
 }
 
-@media only screen and (min-width: 400px) and (max-width: 799px) {
+@media only screen and (min-height: 1700px) and (min-width: 400px) and (max-width: 799px) {
     div.toolbar {
         width: 64px;
     }
@@ -73,7 +99,132 @@ div.canvas {
     }
 }
 
-@media only screen and (max-width: 399px) {
+@media only screen and (min-height: 1700px) and (max-width: 399px) {
+    div.toolbar {
+        width: 32px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 31px);
+    }
+
+    div.toolbar-button {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        padding-left: 4px;
+    }
+
+    div.toolbar-separator {
+        width: 32px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 4px;
+        margin-bottom: 3px;
+    }
+}
+
+@media only screen and (min-height: 1150px) and (max-height: 1699px) and (min-width: 400px) {
+    div.toolbar {
+        width: 64px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 63px);
+    }
+
+    div.toolbar-button {
+        width: 64px;
+        height: 64px;
+        font-size: 48px;
+        padding-left: 8px;
+    }
+
+    div.toolbar-separator {
+        width: 64px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+}
+
+@media only screen and (min-height: 1150px) and (max-height: 1699px) and (max-width: 399px) {
+    div.toolbar {
+        width: 32px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 31px);
+    }
+
+    div.toolbar-button {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        padding-left: 4px;
+    }
+
+    div.toolbar-separator {
+        width: 32px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 4px;
+        margin-bottom: 3px;
+    }
+}
+
+@media only screen and (min-height: 800px) and (max-height: 1049px) and (min-width: 400px) {
+    div.toolbar {
+        width: 50px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 49px);
+    }
+
+    div.toolbar-button {
+        width: 50px;
+        height: 50px;
+        font-size: 36px;
+        padding-left: 7px;
+    }
+
+    div.toolbar-separator {
+        width: 50px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 4px;
+        margin-bottom: 3px;
+    }
+}
+
+@media only screen and (min-height: 800px) and (max-height: 1049px) and (max-width: 399px) {
+    div.toolbar {
+        width: 32px;
+    }
+    
+    div.canvas {
+        width: calc(100% - 31px);
+    }
+
+    div.toolbar-button {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+        padding-left: 4px;
+    }
+
+    div.toolbar-separator {
+        width: 32px;
+        height: 0px;
+        border-bottom: 1px solid #888;
+        margin-top: 4px;
+        margin-bottom: 3px;
+    }
+}
+
+@media only screen and (max-height: 799px) {
     div.toolbar {
         width: 32px;
     }

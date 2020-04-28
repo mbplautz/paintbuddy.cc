@@ -111,3 +111,9 @@ import EditTool from './edit-tool.vue';
         }
     }
 </script>
+
+<style>
+    i.fas {
+        font-size: 80%;
+    }
+</style>
