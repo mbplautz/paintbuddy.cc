@@ -14,14 +14,16 @@
         },
         methods: {
             click() {
-                this.$root.$emit('deselect', this.buttonGroup)
-                this.selected = true;
-                this.$root.paint.state.setTouchFunctions(
-                    this.touchFunction,
-                    this.dragFunction,
-                    this.releaseFunction
-                );
-                this.select();
+                if (this.isEnabled()) {
+                    this.$root.$emit('deselect', this.buttonGroup)
+                    this.selected = true;
+                    this.$root.paint.state.setTouchFunctions(
+                        this.touchFunction,
+                        this.dragFunction,
+                        this.releaseFunction
+                    );
+                    this.select();
+                }
             },
             deselect(buttonGroup) {
                 if (buttonGroup === this.buttonGroup) {
