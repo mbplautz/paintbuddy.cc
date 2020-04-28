@@ -53,7 +53,7 @@ div.canvas {
     div.toolbar {
         width: 100px;
     }
-    
+
     div.canvas {
         width: calc(100% - 99px);
     }
@@ -72,13 +72,23 @@ div.canvas {
         margin-top: 8px;
         margin-bottom: 7px;
     }
+    div.popup-tool {
+        left: 101px;
+    }
+    
+    /* color-icon size should match font icon size for all viewport sizes */
+    div.color-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 36px;
+    }
 }
 
 @media only screen and (min-height: 1700px) and (min-width: 400px) and (max-width: 799px) {
     div.toolbar {
         width: 64px;
     }
-    
+
     div.canvas {
         width: calc(100% - 63px);
     }
@@ -96,6 +106,15 @@ div.canvas {
         border-bottom: 1px solid #888;
         margin-top: 6px;
         margin-bottom: 6px;
+    }
+    div.popup-tool {
+        left: 65px;
+    }
+
+    div.color-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
     }
 }
 
@@ -103,7 +122,7 @@ div.canvas {
     div.toolbar {
         width: 32px;
     }
-    
+
     div.canvas {
         width: calc(100% - 31px);
     }
@@ -122,13 +141,22 @@ div.canvas {
         margin-top: 4px;
         margin-bottom: 3px;
     }
+    div.popup-tool {
+        left: 33px;
+    }
+    
+    div.color-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+    }
 }
 
-@media only screen and (min-height: 1150px) and (max-height: 1699px) and (min-width: 400px) {
+@media only screen and (min-height: 1050px) and (max-height: 1699px) and (min-width: 400px) {
     div.toolbar {
         width: 64px;
     }
-    
+
     div.canvas {
         width: calc(100% - 63px);
     }
@@ -147,13 +175,22 @@ div.canvas {
         margin-top: 6px;
         margin-bottom: 6px;
     }
+    div.popup-tool {
+        left: 65px;
+    }
+    
+    div.color-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
+    }
 }
 
-@media only screen and (min-height: 1150px) and (max-height: 1699px) and (max-width: 399px) {
+@media only screen and (min-height: 1050px) and (max-height: 1699px) and (max-width: 399px) {
     div.toolbar {
         width: 32px;
     }
-    
+
     div.canvas {
         width: calc(100% - 31px);
     }
@@ -172,13 +209,22 @@ div.canvas {
         margin-top: 4px;
         margin-bottom: 3px;
     }
+    div.popup-tool {
+        left: 33px;
+    }
+    
+    div.color-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+    }
 }
 
 @media only screen and (min-height: 800px) and (max-height: 1049px) and (min-width: 400px) {
     div.toolbar {
         width: 50px;
     }
-    
+
     div.canvas {
         width: calc(100% - 49px);
     }
@@ -197,13 +243,22 @@ div.canvas {
         margin-top: 4px;
         margin-bottom: 3px;
     }
+    div.popup-tool {
+        left: 51px;
+    }
+    
+    div.color-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+    }
 }
 
 @media only screen and (min-height: 800px) and (max-height: 1049px) and (max-width: 399px) {
     div.toolbar {
         width: 32px;
     }
-    
+
     div.canvas {
         width: calc(100% - 31px);
     }
@@ -221,6 +276,15 @@ div.canvas {
         border-bottom: 1px solid #888;
         margin-top: 4px;
         margin-bottom: 3px;
+    }
+    div.popup-tool {
+        left: 33px;
+    }
+    
+    div.color-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
     }
 }
 
@@ -228,7 +292,7 @@ div.canvas {
     div.toolbar {
         width: 32px;
     }
-    
+
     div.canvas {
         width: calc(100% - 31px);
     }
@@ -246,6 +310,15 @@ div.canvas {
         border-bottom: 1px solid #888;
         margin-top: 4px;
         margin-bottom: 3px;
+    }
+    div.popup-tool {
+        left: 33px;
+    }
+    
+    div.color-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
     }
 }
 
