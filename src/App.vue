@@ -61,11 +61,26 @@ export default {
                         this.$root.paint.state._lineWidthTo = lineWidth;
                     }
                 },
+                setTouchFunctions: (touchFunction, dragFunction, releaseFunction) => {
+                    if (!this.$root.paint.state.drawing) {
+                        this.$root.paint.state._touchFunctionsTo = null;
+                        this.$root.paint.function.touch = touchFunction;
+                        this.$root.paint.function.drag =  dragFunction;
+                        this.$root.paint.function.release = releaseFunction;
+                    }
+                    else {
+                        this.$root.paint.state._touchFunctionsTo = {
+                            touchFunction,
+                            dragFunction,
+                            releaseFunction
+                        };
+                    }
+                },
                 drawing: false,
                 dirty: false,
                 _colorTo: null,
-                _lineWidthTo: null
-                
+                _lineWidthTo: null,
+                _touchFunctionsTo: null
             }
         };
         // Debug
@@ -80,6 +95,14 @@ export default {
             }
             if (!!this.$root.paint.state._lineWidthTo) {
                 this.$root.paint.state.setLineWidth(this.$root.paint.state._lineWidthTo);
+            }
+            if (!!this.$root.paint.state._touchFunctionsTo) {
+                let functions = this.$root.paint.state._touchFunctionsTo;
+                this.$root.paint.state.setTouchFunctions(
+                    functions.touchFunction,
+                    functions.dragFunction,
+                    functions.releaseFunction
+                );
             }
         });
     },

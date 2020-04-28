@@ -16,9 +16,11 @@
             click() {
                 this.$root.$emit('deselect', this.buttonGroup)
                 this.selected = true;
-                this.$root.paint.function.touch = this.touchFunction;
-                this.$root.paint.function.drag =  this.dragFunction;
-                this.$root.paint.function.release = this.releaseFunction;
+                this.$root.paint.state.setTouchFunctions(
+                    this.touchFunction,
+                    this.dragFunction,
+                    this.releaseFunction
+                );
                 this.select();
             },
             deselect(buttonGroup) {
