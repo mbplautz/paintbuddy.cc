@@ -128,7 +128,7 @@
                 }
                 let undoContext = this.$root.paint.canvas.undoContext;
                 let undoCanvas = this.$root.paint.canvas.undoElement;
-                undoContext.clearRect(0, 0, undoElement.width, undoElement.height);
+                undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
                 undoContext.drawImage(canvas, 0, 0);
                 this.commitDrawing();
                 context.clearRect(0, 0, canvas.width, canvas.height);
@@ -152,7 +152,7 @@
                 context.lineWidth = this.getEraserLineWidth(options);
             },
             getEraserLineWidth(options) {
-                return options.lineWidth * 2;
+                return options.lineWidth * 3;
             }
         }
     }
