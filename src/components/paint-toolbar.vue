@@ -13,8 +13,10 @@
         <fill-tool buttonGroup="edit-tools-group" />
         <eraser-tool buttonGroup="edit-tools-group" />
         <toolbar-separator />
+        <line-width-tool />
 
         <color-menu />
+        <line-width-menu />
     </div>
 </template>
 
@@ -31,8 +33,10 @@ import RectangleTool from './rectangle-tool.vue';
 import EllipseTool from './ellipse-tool.vue';
 import FillTool from './fill-tool.vue';
 import EraserTool from './eraser-tool.vue';
+import LineWidthTool from './line-width-tool.vue';
 
 import ColorMenu from './color-menu.vue';
+import LineWidthMenu from './line-width-menu.vue';
 
     export default {
         data() {
@@ -51,7 +55,9 @@ import ColorMenu from './color-menu.vue';
             EllipseTool,
             FillTool,
             EraserTool,
-            ColorMenu
+            LineWidthTool,
+            ColorMenu,
+            LineWidthMenu
         }
     }
 </script>
