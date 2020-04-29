@@ -95,7 +95,7 @@ export default {
                         let undoMap = this.$root.paint.state._undoQueue.pop();
                         let redoMap = {};
                         let data = imageData.data;
-                        let r, g, b, a, redoR, redoG, redoB, redoA, val;
+                        let r, g, b, a, redoR, redoG, redoB, redoA, val, upperOffset;
                         // We can use fancy consolidated syntax since this operation is used less frequently
                         Object.keys(undoMap).forEach(key => {
                             a = key & 0xFF;
@@ -112,19 +112,30 @@ export default {
                             }
                             let offsetArray = undoMap[key];
                             offsetArray.forEach(offset => {
-                                redoR = data[offset];
-                                redoG = data[offset + 1];
-                                redoB = data[offset + 2];
-                                redoA = data[offset + 3];
-                                data[offset] = r;
-                                data[offset + 1] = g;
-                                data[offset + 2] = b;
-                                data[offset + 3] = a;
-                                val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
-                                if (!redoMap[val]) {
-                                    redoMap[val] = [];
+                                if (Array.isArray(offset)) { // If this is a range ...
+                                    upperOffset = offset[1]; // ... then determine the boundaries
+                                    offset = offset[0];
                                 }
-                                redoMap[val].push(offset);
+                                else {
+                                    upperOffset = offset;
+                                }
+                                // Either process the one offset or the whole range
+                                do {
+                                    redoR = data[offset];
+                                    redoG = data[offset + 1];
+                                    redoB = data[offset + 2];
+                                    redoA = data[offset + 3];
+                                    data[offset] = r;
+                                    data[offset + 1] = g;
+                                    data[offset + 2] = b;
+                                    data[offset + 3] = a;
+                                    val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
+                                    if (!redoMap[val]) {
+                                        redoMap[val] = [];
+                                    }
+                                    redoMap[val].push(offset);
+                                    offset += 4;
+                                } while (offset <= upperOffset);
                             });
                         });
                         context.putImageData(imageData, 0, 0);
