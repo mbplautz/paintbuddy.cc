@@ -32,7 +32,6 @@ import EditTool from './edit-tool.vue';
                 console.log('Ellipse Tool clicked');
             },
             touchFunction(e) {
-                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -113,10 +112,14 @@ import EditTool from './edit-tool.vue';
                     finalX = this.touch.finalX;
                     finalY = this.touch.finalY;
                 }
+                // Clean up the active canvas
                 let context = this.$root.paint.canvas.activeContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                context = this.$root.paint.canvas.drawContext;
-                canvas = this.$root.paint.canvas.drawElement;
+                // Now clean up the undo canvas
+                canvas = this.$root.paint.canvas.undoElement;
+                context = this.$root.paint.canvas.undoContext;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                // Now draw to the undo canvas before committing to the draw canvas
                 context.beginPath();
                 let radiusX = (finalX - initialX) / 2;
                 let radiusY = (finalY - initialY) / 2;
@@ -137,6 +140,7 @@ import EditTool from './edit-tool.vue';
                 else {
                     context.stroke();
                 }
+                this.commitDrawing();
             }
         }
     }

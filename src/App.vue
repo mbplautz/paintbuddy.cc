@@ -32,6 +32,8 @@ export default {
                 activeContext: null,
                 drawElement: null,
                 drawContext: null,
+                undoElement: null,
+                undoContext: null,
                 getPointOffset: null
             },
             state: {
@@ -44,6 +46,8 @@ export default {
                         canvas.drawContext.fillStyle = color;
                         canvas.activeContext.strokeStyle = color;
                         canvas.activeContext.fillStyle = color;
+                        canvas.undoContext.strokeStyle = color;
+                        canvas.undoContext.fillStyle = color;
                     }
                     else {
                         this.$root.paint.state._colorTo = color;
@@ -56,6 +60,7 @@ export default {
                         let canvas = this.$root.paint.canvas;
                         canvas.drawContext.lineWidth = lineWidth;
                         canvas.activeContext.lineWidth = lineWidth;
+                        canvas.undoContext.lineWidth = lineWidth;
                     }
                     else {
                         this.$root.paint.state._lineWidthTo = lineWidth;
@@ -76,37 +81,109 @@ export default {
                         };
                     }
                 },
-                save: () => {
+                saveUndoMap: (undoMap) => {
                     this.$root.paint.state.dirty = true;
-                    let canvas = this.$root.paint.canvas.drawElement;
-                    let savedContext = this.$root.paint.canvas.drawContext.getImageData(0, 0, canvas.width, canvas.height);
-                    this.$root.paint.state._undoStack.push(savedContext);
-                    this.$root.paint.state._redoStack.length = 0;
+                    this.$root.paint.state.canRedo = false;
+                    this.$root.paint.state._redoQueue.length = 0;
+                    this.$root.paint.state._undoQueue.push(undoMap);
                 },
                 undo: () => {
-                    // this.$root.paint.canvas.drawContext.restore();
-                    if (this.$root.paint.state._undoStack.length > 0) {
-                        let savedContext = this.$root.paint.state._undoStack.pop();
-                        this.$root.paint.state._redoStack.push(savedContext);
-                        this.$root.paint.canvas.drawContext.putImageData(savedContext, 0, 0);
+                    if (this.$root.paint.state._undoQueue.length > 0) {
+                        let canvas = this.$root.paint.canvas.drawElement;
+                        let context = this.$root.paint.canvas.drawContext;
+                        let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        let undoMap = this.$root.paint.state._undoQueue.pop();
+                        let redoMap = {};
+                        let data = imageData.data;
+                        let r, g, b, a, redoR, redoG, redoB, redoA, val;
+                        // We can use fancy consolidated syntax since this operation is used less frequently
+                        Object.keys(undoMap).forEach(key => {
+                            a = key & 0xFF;
+                            b = key & 0xFF00;
+                            g = key & 0xFF0000;
+                            r = key & 0xFF000000;
+                            b >>= 8;
+                            g >>= 16;
+                            r >>= 24;
+                            // 24 bit right shift in a 32-bit word may retain the sign
+                            if (r < 0) {
+                                // if so, roll the overflow
+                                r = 255 + r;
+                            }
+                            let offsetArray = undoMap[key];
+                            offsetArray.forEach(offset => {
+                                redoR = data[offset];
+                                redoG = data[offset + 1];
+                                redoB = data[offset + 2];
+                                redoA = data[offset + 3];
+                                data[offset] = r;
+                                data[offset + 1] = g;
+                                data[offset + 2] = b;
+                                data[offset + 3] = a;
+                                val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
+                                if (!redoMap[val]) {
+                                    redoMap[val] = [];
+                                }
+                                redoMap[val].push(offset);
+                            });
+                        });
+                        context.putImageData(imageData, 0, 0);
+                        this.$root.paint.state._redoQueue.push(redoMap);
+                        this.$root.paint.state.canRedo = true;
+                        this.$root.paint.state.dirty = this.$root.paint.state._undoQueue.length > 0;
                     }
-                    this.$root.paint.state.dirty = this.$root.paint.state._undoStack.length > 0;
-                    this.$root.paint.state.canRedo = true;
                 },
                 redo: () => {
-                    if (this.$root.paint.state._redoStack.length > 0) {
-                        let savedContext = this.$root.paint.state._redoStack.pop();
-                        this.$root.paint.state._undoStack.push(savedContext);
-                        this.$root.paint.canvas.drawContext.putImageData(savedContext, 0, 0);
+                    if (this.$root.paint.state._redoQueue.length > 0) {
+                        let canvas = this.$root.paint.canvas.drawElement;
+                        let context = this.$root.paint.canvas.drawContext;
+                        let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        let redoMap = this.$root.paint.state._redoQueue.pop();
+                        let undoMap = {};
+                        let data = imageData.data;
+                        let r, g, b, a, redoR, redoG, redoB, redoA, val;
+                        // We can use fancy consolidated syntax since this operation is used less frequently
+                        Object.keys(redoMap).forEach(key => {
+                            a = key & 0xFF;
+                            b = key & 0xFF00;
+                            g = key & 0xFF0000;
+                            r = key & 0xFF000000;
+                            b >>= 8;
+                            g >>= 16;
+                            r >>= 24;
+                            // 24 bit right shift in a 32-bit word may retain the sign
+                            if (r < 0) {
+                                // if so, roll the overflow
+                                r = 255 + r;
+                            }
+                            let offsetArray = redoMap[key];
+                            offsetArray.forEach(offset => {
+                                redoR = data[offset];
+                                redoG = data[offset + 1];
+                                redoB = data[offset + 2];
+                                redoA = data[offset + 3];
+                                data[offset] = r;
+                                data[offset + 1] = g;
+                                data[offset + 2] = b;
+                                data[offset + 3] = a;
+                                val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
+                                if (!undoMap[val]) {
+                                    undoMap[val] = [];
+                                }
+                                undoMap[val].push(offset);
+                            });
+                        });
+                        context.putImageData(imageData, 0, 0);
+                        this.$root.paint.state._undoQueue.push(undoMap);
+                        this.$root.paint.state.dirty = true;
+                        this.$root.paint.state.canRedo = this.$root.paint.state._redoQueue.length > 0;
                     }
-                    this.$root.paint.state.canRedo = this.$root.paint.state._redoStack.length > 0;
-                    this.$root.paint.state.dirty = true;
                 },
                 drawing: false,
                 dirty: false,
                 canRedo: false,
-                _undoStack: [],
-                _redoStack: [],
+                _undoQueue: [],
+                _redoQueue: [],
                 _colorTo: null,
                 _lineWidthTo: null,
                 _touchFunctionsTo: null

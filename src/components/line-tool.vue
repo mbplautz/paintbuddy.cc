@@ -32,7 +32,6 @@ import EditTool from './edit-tool.vue';
                 console.log('Line Tool clicked');
             },
             touchFunction(e) {
-                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -99,12 +98,14 @@ import EditTool from './edit-tool.vue';
                 }
                 let context = this.$root.paint.canvas.activeContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                context = this.$root.paint.canvas.drawContext;
-                canvas = this.$root.paint.canvas.drawElement;
+                context = this.$root.paint.canvas.undoContext;
+                canvas = this.$root.paint.canvas.undoElement;
+                context.clearRect(0, 0, canvas.width, canvas.height);
                 context.beginPath();
                 context.moveTo(initialX, initialY);
                 context.lineTo(finalX, finalY);
                 context.stroke();
+                this.commitDrawing();
             }
         }
     }

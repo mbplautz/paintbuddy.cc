@@ -32,7 +32,6 @@
 
             },
             releaseFunction(e) {
-                this.$root.paint.state.save();
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -67,7 +66,10 @@
                     imageData.height
                 );
 
+                context = this.$root.paint.canvas.undoContext;
+                context.clearRect(0, 0, canvas.width, canvas.height);
                 context.putImageData(imageData, 0, 0);
+                this.commitDrawing();
             },
             // The next two functions are from a flood fill algorithm implementaiton
             // from https://bl.ocks.org/jon-hall/2fc30039629ef22bc95c

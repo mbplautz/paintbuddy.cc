@@ -25,11 +25,13 @@
                 }
                 let canvasDiv = this.getCanvasDiv();
                 let clientRect = canvasDiv.getBoundingClientRect();
+                // Create the draw canvas - this is where the image is actually drawn to and shown
                 let drawCanvas = document.createElement('canvas');
                 drawCanvas.className = 'draw-canvas';
                 drawCanvas.width = clientRect.width;
                 drawCanvas.height = clientRect.height;
                 canvasDiv.appendChild(drawCanvas);
+                // Create the active canvas - this is where things like actively moving lines and rectanges show until they are complete
                 let activeCanvas = document.createElement('canvas');
                 activeCanvas.className = 'active-canvas';
                 activeCanvas.width = clientRect.width;
@@ -41,12 +43,22 @@
                 activeCanvas.addEventListener('mouseup', this.releaseFunction);
                 activeCanvas.addEventListener('touchend', this.releaseFunction);
                 canvasDiv.appendChild(activeCanvas);
+                // Create the undo canvas - this is the canvas things are drawn to first, so we can provide an undo method
+                let undoCanvas = document.createElement('canvas');
+                undoCanvas.className = 'undo-canvas';
+                undoCanvas.width = clientRect.width;
+                undoCanvas.height = clientRect.height
+                canvasDiv.appendChild(undoCanvas);
                 this.$root.paint.canvas.activeElement = activeCanvas;
                 this.$root.paint.canvas.activeContext = activeCanvas.getContext('2d');
                 this.$root.paint.canvas.activeContext.lineCap = 'round'; // Set the default upon context creation
                 this.$root.paint.canvas.drawElement = drawCanvas;
                 this.$root.paint.canvas.drawContext = drawCanvas.getContext('2d');
                 this.$root.paint.canvas.drawContext.lineCap = 'round'; // Set the default upon context creation
+                this.$root.paint.canvas.undoElement = undoCanvas;
+                this.$root.paint.canvas.undoContext = undoCanvas.getContext('2d');
+                this.$root.paint.canvas.undoContext.lineCap = 'round'; // Set the default upon context creation
+                
                 // This comes from the flood fill algorithm and is a performance enhancement - removing the width reference 
                 // and hardcoding it instead reduces cycles. We set it here, every time the width of the canvas changes
                 this.$root.paint.canvas.getPointOffset = new Function('x', 'y', 'return 4 * (y * ' + clientRect.width + ' + x)');
@@ -104,6 +116,10 @@
     }
 
     canvas.draw-canvas {
-        z-index: 0
+        z-index: 0;
+    }
+
+    canvas.undo-canvas {
+        z-index: -2;
     }
 </style>
