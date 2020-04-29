@@ -367,6 +367,6 @@ div.canvas {
     height: 100%;
 }
 
-div.toolbar-button.selected-item {
+div.toolbar-button.selected-item, div.toolbar-button div.selected-option {
     background-color: #cee9fe;
 }

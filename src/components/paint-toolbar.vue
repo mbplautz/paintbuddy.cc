@@ -14,6 +14,7 @@
         <eraser-tool buttonGroup="edit-tools-group" />
         <toolbar-separator />
         <line-width-tool />
+        <filled-polygon-tool />
 
         <color-menu />
         <line-width-menu />
@@ -34,6 +35,7 @@ import EllipseTool from './ellipse-tool.vue';
 import FillTool from './fill-tool.vue';
 import EraserTool from './eraser-tool.vue';
 import LineWidthTool from './line-width-tool.vue';
+import FilledPolygonTool from './filled-polygon-tool.vue';
 
 import ColorMenu from './color-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
@@ -56,6 +58,7 @@ import LineWidthMenu from './line-width-menu.vue';
             FillTool,
             EraserTool,
             LineWidthTool,
+            FilledPolygonTool,
             ColorMenu,
             LineWidthMenu
         }
