@@ -19,8 +19,7 @@
                 icon: 'fas fa-eraser',
                 mouse: {
                     lastX: 0,
-                    lastY: 0,
-                    imageData: null
+                    lastY: 0
                 },
                 touch: {}
             }
@@ -31,7 +30,6 @@
                 console.log('Eraser Tool clicked');
             },
             touchFunction(e) {
-                // TODO: Add the tool canvas, and get rid of this unreliable implementation for using the same canvas for erasing and drawing the tool
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 let context = this.$root.paint.canvas.activeContext;
@@ -48,23 +46,21 @@
                     context.stroke();
                     this.mouse.lastX = x;
                     this.mouse.lastY = y;
-                    this.mouse.imageData = context.getImageData(x - eraserLineWidth, y - eraserLineWidth, eraserLineWidth * 2, eraserLineWidth * 2);
-                    this.drawTool(x, y, context, options);
+                    this.drawTool(x, y, eraserLineWidth);
                 }
                 else if (e.type === 'touchstart') {
                     this.touch = {};
                     Array.prototype.forEach.call(e.touches, (touch, index) => {
                         let coordinate = {
                             x: touch.clientX - bounds.left,
-                            y: touch.clientY - bounds.top,
+                            y: touch.clientY - bounds.top
                         };
                         context.beginPath();
                         context.moveTo(coordinate.x, coordinate.y);
                         context.lineTo(coordinate.x, coordinate.y);
                         context.stroke();
                         this.touch[touch.identifier] = coordinate;
-                        coordinate.imageData = context.getImageData(coordinate.x - eraserLineWidth, coordinate.y - eraserLineWidth, eraserLineWidth * 2, eraserLineWidth * 2);
-                        this.drawTool(coordinate.x, coordinate.y, context, options);
+                        this.drawTool(coordinate.x, coordinate.y, eraserLineWidth, index === 0); // Only clear the active canvas on the first go round
                     });
                 }
             },
@@ -77,79 +73,64 @@
                 if (e.type === 'mousemove') {
                     let x = e.clientX - bounds.left;
                     let y = e.clientY - bounds.top;
-                    context.putImageData(this.mouse.imageData, this.mouse.lastX - eraserLineWidth, this.mouse.lastY - eraserLineWidth);
-                    context.beginPath();
                     context.moveTo(this.mouse.lastX, this.mouse.lastY);
                     context.lineTo(x, y);
                     context.stroke();
                     this.mouse.lastX = x;
                     this.mouse.lastY = y;
-                    this.mouse.imageData = context.getImageData(x - eraserLineWidth, y - eraserLineWidth, eraserLineWidth * 2, eraserLineWidth * 2);
-                    this.drawTool(x, y, context, options);
+                    this.drawTool(x, y, eraserLineWidth);
                 }
                 else if (e.type === 'touchmove') {
                     Array.prototype.forEach.call(e.touches, (touch, index) => {
-                        let lastCoordinate = this.touch[touch.identifier];
                         let coordinate = {
                             x: touch.clientX - bounds.left,
                             y: touch.clientY - bounds.top
                         };
-                        if (lastCoordinate) {
-                            context.putImageData(lastCoordinate.imageData, lastCoordinate.x - eraserLineWidth, lastCoordinate.y - eraserLineWidth);
-                        }
                         context.beginPath();
-                        if (lastCoordinate) {
-                            context.moveTo(lastCoordinate.x, lastCoordinate.y);
-                        }
-                        else {
-                            context.moveTo(coordinate.x, coordinate.y);
-                        }
+                        context.moveTo(this.touch[touch.identifier].x, this.touch[touch.identifier].y);
                         context.lineTo(coordinate.x, coordinate.y);
                         context.stroke();
                         this.touch[touch.identifier] = coordinate;
-                        coordinate.imageData = context.getImageData(coordinate.x - eraserLineWidth, coordinate.y - eraserLineWidth, eraserLineWidth * 2, eraserLineWidth * 2);
-                        this.drawTool(coordinate.x, coordinate.y, context, options);
+                        this.drawTool(coordinate.x, coordinate.y, eraserLineWidth, index === 0); // Only clear the active canvas on the first go round
                     });
                 }
             },
             releaseFunction(e) {
+                // For the brush tool, copy what was on the active canvas to the undo canvas
                 let canvas = this.$root.paint.canvas.activeElement;
-                let context = this.$root.paint.canvas.activeContext;
-                let options = this.$root.paint.options;
-                let eraserLineWidth = this.getEraserLineWidth(options);
-                if (e.type === 'mouseup') {
-                    context.putImageData(this.mouse.imageData, this.mouse.lastX - eraserLineWidth, this.mouse.lastY - eraserLineWidth);
-                }
-                else if (e.type === 'touchend') {
-                    Object.keys(this.touch).forEach(identifier => {
-                        let coordinate = this.touch[identifier];
-                        context.putImageData(coordinate.imageData, coordinate.x - eraserLineWidth, coordinate.y - eraserLineWidth);
-                    });
-                }
+                let activeContext = this.$root.paint.canvas.activeContext;
                 let undoContext = this.$root.paint.canvas.undoContext;
-                let undoCanvas = this.$root.paint.canvas.undoElement;
-                undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
-                undoContext.drawImage(canvas, 0, 0);
+                let toolContext = this.$root.paint.canvas.toolContext;
+                undoContext.clearRect(0, 0, canvas.width, canvas.height); // Make sure the undo canvas is clean first
+                undoContext.drawImage(canvas, 0, 0); // Now draw to the undo canvas - use drawImage instead of putImageData to preserve opacity
+                activeContext.clearRect(0, 0, canvas.width, canvas.height); // Don't forget to clean up the active canvas
+                toolContext.clearRect(0, 0, canvas.width, canvas.height); // Erase any trace of the tool
                 this.commitDrawing();
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                // Restore active canvas' color and line width
-                context = this.$root.paint.canvas.activeContext;
-                context.strokeStyle = this.$root.paint.options.color;
-                context.lineWidth = this.$root.paint.options.lineWidth;
-                context.fillStyle = this.$root.paint.options.color;
+
+
+                // Restore drawing canvas' color and line width
+                activeContext = this.$root.paint.canvas.activeContext;
+                activeContext.strokeStyle = this.$root.paint.options.color;
+                activeContext.lineWidth = this.$root.paint.options.lineWidth;
+
             },
-            drawTool(x, y, context, options) {
+            drawTool(x, y, lineWidth, clear = true) {
+                let canvas = this.$root.paint.canvas.toolElement;
+                let context = this.$root.paint.canvas.toolContext;
+                let options = this.$root.paint.options;
+                if (clear) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                }
+                lineWidth = lineWidth / 2;
                 context.fillStyle = backgroundColor;
                 context.beginPath();
-                context.ellipse(x, y, options.lineWidth, options.lineWidth, 0, 0, Math.PI * 2);
+                context.ellipse(x, y, lineWidth, lineWidth, 0, 0, Math.PI * 2);
                 context.fill();
                 context.lineWidth = 1;
                 context.strokeStyle = edgeColor;
                 context.beginPath();
-                context.ellipse(x, y, options.lineWidth, options.lineWidth, 0, 0, Math.PI * 2);
+                context.ellipse(x, y, lineWidth, lineWidth, 0, 0, Math.PI * 2);
                 context.stroke();
-                context.strokeStyle = backgroundColor;
-                context.lineWidth = this.getEraserLineWidth(options);
             },
             getEraserLineWidth(options) {
                 return options.lineWidth * 3;

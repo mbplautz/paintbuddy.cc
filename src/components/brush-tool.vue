@@ -93,7 +93,7 @@ import EditTool from './edit-tool.vue';
                 let activeContext = this.$root.paint.canvas.activeContext;
                 let undoContext = this.$root.paint.canvas.undoContext;
                 undoContext.clearRect(0, 0, canvas.width, canvas.height); // Make sure the undo canvas is clean first
-                undoContext.drawImage(canvas, 0, 0); // Now draw to the und canvas
+                undoContext.drawImage(canvas, 0, 0); // Now draw to the undo canvas
                 activeContext.clearRect(0, 0, canvas.width, canvas.height); // Don't forget to clean up the active canvas
                 this.commitDrawing();
             }

@@ -46,19 +46,28 @@
                 activeCanvas.className = 'active-canvas';
                 activeCanvas.width = clientRect.width;
                 activeCanvas.height = clientRect.height;
-                activeCanvas.addEventListener('mousedown', this.touchFunction);
-                activeCanvas.addEventListener('touchstart', this.touchFunction);
-                activeCanvas.addEventListener('mousemove', this.dragFunction);
-                activeCanvas.addEventListener('touchmove', this.dragFunction);
-                activeCanvas.addEventListener('mouseup', this.releaseFunction);
-                activeCanvas.addEventListener('touchend', this.releaseFunction);
                 canvasDiv.appendChild(activeCanvas);
+                // Create the tool canvas - this is where the tools (like eraser) are drawn while they are being used
+                let toolCanvas = document.createElement('canvas');
+                toolCanvas.className = 'tool-canvas';
+                toolCanvas.width = clientRect.width;
+                toolCanvas.height = clientRect.height;
+                toolCanvas.addEventListener('mousedown', this.touchFunction);
+                toolCanvas.addEventListener('touchstart', this.touchFunction);
+                toolCanvas.addEventListener('mousemove', this.dragFunction);
+                toolCanvas.addEventListener('touchmove', this.dragFunction);
+                toolCanvas.addEventListener('mouseup', this.releaseFunction);
+                toolCanvas.addEventListener('touchend', this.releaseFunction);
+                canvasDiv.appendChild(toolCanvas);
                 // Create the undo canvas - this is the canvas things are drawn to first, so we can provide an undo method
                 let undoCanvas = document.createElement('canvas');
                 undoCanvas.className = 'undo-canvas';
                 undoCanvas.width = clientRect.width;
                 undoCanvas.height = clientRect.height
                 canvasDiv.appendChild(undoCanvas);
+                this.$root.paint.canvas.toolElement = toolCanvas;
+                this.$root.paint.canvas.toolContext = toolCanvas.getContext('2d');
+                this.$root.paint.canvas.toolContext.lineCap = 'round'; // Set the default upon context creation
                 this.$root.paint.canvas.activeElement = activeCanvas;
                 this.$root.paint.canvas.activeContext = activeCanvas.getContext('2d');
                 this.$root.paint.canvas.activeContext.lineCap = 'round'; // Set the default upon context creation
@@ -115,6 +124,10 @@
         position: absolute;
         top: 0;
         left: 0;
+    }
+
+    canvas.tool-canvas {
+        z-index: 2;
     }
 
     canvas.active-canvas {

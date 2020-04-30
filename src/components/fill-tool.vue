@@ -65,7 +65,7 @@
                 }
                 let context = this.$root.paint.canvas.drawContext;
                 let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                let targetOffset = this.$root.paint.canvas.getPointOffset(x, y);
+                let targetOffset = 4 * (y * canvas.width + x);
                 let target = imageData.data.slice(targetOffset, targetOffset + 4);
                 let parsedColor = this.parseColor(this.$root.paint.options.color);
 

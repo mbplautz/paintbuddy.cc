@@ -27,6 +27,8 @@ export default {
                 filledPolygon: false
             },
             canvas: {
+                toolElement: null,
+                toolContext: null,
                 activeElement: null,
                 activeContext: null,
                 drawElement: null,
