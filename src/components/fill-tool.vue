@@ -64,8 +64,11 @@
                     y = e.touches[0].clientY - bounds.top;
                 }
                 let context = this.$root.paint.canvas.drawContext;
-                let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                let targetOffset = 4 * (y * canvas.width + x);
+                // To avoid unwanted side effects, the fill must only apply to the visible viewport, not the entire canvas
+                let parentDiv = canvas.parentElement;
+                let clientRect = parentDiv.getBoundingClientRect();
+                let imageData = context.getImageData(0, 0, clientRect.width, clientRect.height);
+                let targetOffset = 4 * (y * clientRect.width + x);
                 let target = imageData.data.slice(targetOffset, targetOffset + 4);
                 let parsedColor = this.parseColor(this.$root.paint.options.color);
 
@@ -84,15 +87,17 @@
                     parsedColor,
                     target,
                     tolerance: 10,
-                    width: imageData.width,
-                    height: imageData.height
+                    width: clientRect.width,
+                    height: clientRect.height
                 });
             },
             completeFill(oEvent) {
                 let context = this.$root.paint.canvas.undoContext;
                 let canvas = this.$root.paint.canvas.undoElement;
+                let parentDiv = canvas.parentElement;
+                let clientRect = parentDiv.getBoundingClientRect();
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                let imageData = new ImageData(oEvent.data, canvas.width, canvas.height);
+                let imageData = new ImageData(oEvent.data, clientRect.width, clientRect.height);
                 context.putImageData(imageData, 0, 0);
                 this.commitDrawing();
                 clearTimeout(this.heavyCoverTimeout);
