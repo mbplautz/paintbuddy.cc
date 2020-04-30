@@ -2,6 +2,16 @@
     <div class="canvas">
         <div class="canvas-child">
         </div>
+        <div class="paint-cover-light">
+        </div>
+        <div class="paint-cover-heavy">
+            <div class="outer">
+                <div class="inner-cover"></div>
+                <div class="inner-container">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -58,10 +68,6 @@
                 this.$root.paint.canvas.undoElement = undoCanvas;
                 this.$root.paint.canvas.undoContext = undoCanvas.getContext('2d');
                 this.$root.paint.canvas.undoContext.lineCap = 'round'; // Set the default upon context creation
-                
-                // This comes from the flood fill algorithm and is a performance enhancement - removing the width reference 
-                // and hardcoding it instead reduces cycles. We set it here, every time the width of the canvas changes
-                this.$root.paint.canvas.getPointOffset = new Function('x', 'y', 'return 4 * (y * ' + clientRect.width + ' + x)');
             },
             getDrawCanvas() {
                 return document.querySelector('.draw-canvas');
@@ -121,5 +127,54 @@
 
     canvas.undo-canvas {
         z-index: -2;
+    }
+
+    div.paint-cover-light {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: -5;
+    }
+
+    div.paint-cover-heavy {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: -5;
+    }
+
+    div.paint-cover-heavy div.outer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    div.paint-cover-heavy div.outer div.inner-cover {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #bbbbbb;
+        opacity: 0.5;
+    }
+
+    div.paint-cover-heavy div.outer div.inner-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    div.paint-cover-heavy div.outer div.inner-container i {
+        font-size: 72px;
+        margin: 0 auto;
     }
 </style>

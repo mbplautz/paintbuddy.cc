@@ -1,9 +1,24 @@
 <script>
     import EditTool from './edit-tool.vue';
+    import Worker from '../worker/flood-fill.worker.js';
 
-    const floodFillSteps = [[1, 0], [0, 1], [0, -1], [-1, 0]];
-    const floodFillWays = floodFillSteps.length;
     const parseColorRegex = /^#?([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})?$/i;
+
+    // So the flood fill is a heavily intensive processing operation for a web browser. Every other
+    // tool that is used can be processed on the event thread because it is relatively so light. So
+    // to improve the fill tool's user experience, and to compensate for the fact that it is often
+    // going to take one or two whole seconds to fill the requested area, there are page covers
+    // that appear when the paint tool is used:
+    //   - a light cover that shows up immediately after the paint operation has started
+    //   - a heavy cover that is more in-your-face and informative that this operation is taking time
+    // The heavy cover only shows up if the operation has taken over a second, as defined by this
+    // number below. If the operation completes before one second, then the user never sees the heavy
+    // cover. This is intended to create a more seemless and less jarring user experience for the fill
+    // tool.
+    const heavyCoverDelay = 1000;
+
+    const worker = new Worker();
+    window.floodFillWorker = worker;
 
     export default {
         props: {
@@ -17,8 +32,12 @@
         data() {
             return {
                 name: 'fill',
-                icon: 'fas fa-fill-drip'
+                icon: 'fas fa-fill-drip',
+                heavyCoverTimeout: 0
             }
+        },
+        mounted() {
+            worker.onmessage = this.completeFill;
         },
         extends: EditTool,
         methods: {
@@ -47,7 +66,7 @@
                 let context = this.$root.paint.canvas.drawContext;
                 let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
                 let targetOffset = this.$root.paint.canvas.getPointOffset(x, y);
-                let target = target = imageData.data.slice(targetOffset, targetOffset + 4);
+                let target = imageData.data.slice(targetOffset, targetOffset + 4);
                 let parsedColor = this.parseColor(this.$root.paint.options.color);
 
                 if(this.toleranceEqual(target, 0, parsedColor, 10)) {
@@ -55,29 +74,30 @@
                     return;
                 }
 
-                this.floodFill(
-                    imageData.data, 
-                    this.$root.paint.canvas.getPointOffset,
-                    { x, y },
+                this.showLightPaintCover();
+                this.heavyCoverTimeout = setTimeout(this.showHeavyPaintCover, heavyCoverDelay);
+                // Submit this to the flood fill worker and wait for it to complete this heavy calculation
+                worker.postMessage({
+                    data: imageData.data,
+                    x,
+                    y,
                     parsedColor,
                     target,
-                    10,
-                    imageData.width,
-                    imageData.height
-                );
-
-                context = this.$root.paint.canvas.undoContext;
+                    tolerance: 10,
+                    width: imageData.width,
+                    height: imageData.height
+                });
+            },
+            completeFill(oEvent) {
+                let context = this.$root.paint.canvas.undoContext;
+                let canvas = this.$root.paint.canvas.undoElement;
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                let imageData = new ImageData(oEvent.data, canvas.width, canvas.height);
                 context.putImageData(imageData, 0, 0);
                 this.commitDrawing();
+                clearTimeout(this.heavyCoverTimeout);
+                this.hidePaintCovers();
             },
-            // The next two functions are from a flood fill algorithm implementaiton
-            // from https://bl.ocks.org/jon-hall/2fc30039629ef22bc95c
-            // "canvas flood fill implementation and a simple demo app"
-            // Adapted for code consistency
-            // Released under the The MIT License.
-
-            // Compare subsection of arrayOne's values to arrayTwo's values, with an optional tolerance
             toleranceEqual(arrayOne, offset, arrayTwo, tolerance) {
                 let length = arrayTwo.length,
                 start = offset + length;
@@ -93,57 +113,6 @@
                 }
                 
                 return true;
-            },
-
-            // The actual flood fill implementation
-            floodFill(imageData, getPointOffset, point, colour, target, tolerance, width, height) {
-                let points = [point],
-                    seen = {},
-                    steps = floodFillSteps,
-                    key,
-                    x,
-                    y,
-                    offset,
-                    i,
-                    x2,
-                    y2;
-                
-                // Keep going while we have points to walk
-                while(!!(point = points.pop())) {
-                    x = point.x;
-                    y = point.y;
-                    offset = getPointOffset(x, y);
-                    
-                    // Move to next point if this pixel isn't within tolerance of the colour being filled
-                    if(!this.toleranceEqual(imageData, offset, target, tolerance)) {
-                        continue;
-                    }
-                    
-                    // Update the pixel to the fill colour and add neighbours onto stack to traverse 
-                    // the fill area
-                    i = floodFillWays;
-                    while(i--) {
-                        // Use the same loop for setting RGBA as for checking the neighbouring pixels
-                        if(i < 4) {
-                            imageData[offset + i] = colour[i];
-                        }
-                    
-                        // Get the new coordinate by adjusting x and y based on current step
-                        x2 = x + steps[i][0];
-                        y2 = y + steps[i][1];
-                        key = x2 + ',' + y2;
-                        
-                        // If new coordinate is out of bounds, or we've already added it, then skip to 
-                        // trying the next neighbour without adding this one
-                        if(x2 < 0 || y2 < 0 || x2 >= width || y2 >= height || seen[key]) {
-                            continue;
-                        }
-                        
-                        // Push neighbour onto points array to be processed, and tag as seen
-                        points.push({ x: x2, y: y2 });
-                        seen[key] = true;
-                    }
-                }
             },
             parseColor(value) {
                 // Try to extract the hex values from the colour string
@@ -162,6 +131,16 @@
                 });
 
                 return parsedColor;
+            },
+            showLightPaintCover() {
+                document.querySelector('div.paint-cover-light').style.zIndex = 5;
+            },
+            showHeavyPaintCover() {
+                document.querySelector('div.paint-cover-heavy').style.zIndex = 5;
+            },
+            hidePaintCovers() {
+                document.querySelector('div.paint-cover-light').style.zIndex = '';
+                document.querySelector('div.paint-cover-heavy').style.zIndex = '';
             }
         }
     }

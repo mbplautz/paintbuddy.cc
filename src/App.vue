@@ -1,6 +1,5 @@
 <template>
     <div id="app">
-        <div class="paint-background"></div>
         <paint-toolbar />
         <paint-canvas />
     </div>
@@ -34,7 +33,6 @@ export default {
                 drawContext: null,
                 undoElement: null,
                 undoContext: null,
-                getPointOffset: null
             },
             state: {
                 setColor: (color) => {
@@ -204,6 +202,14 @@ export default {
         window.Vue = this.$root;
     },
     mounted() {
+        // Clear the drawing area - solid background
+        let canvas = this.$root.paint.canvas.drawElement;
+        let context = this.$root.paint.canvas.drawContext;
+        context.fillStyle = '#ffffff'; // TODO: Centralize background color
+        context.beginPath();
+        context.rect(0, 0, canvas.width, canvas.height);
+        context.fill();
+        // Set the defaults
         this.$root.paint.state.setColor(this.$root.paint.options.color);
         this.$root.paint.state.setLineWidth(this.$root.paint.options.lineWidth);
         try {
