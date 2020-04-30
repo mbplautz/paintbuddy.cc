@@ -15,12 +15,15 @@ new Vue({
     paint: {
       options: {
         color: '',
-        lineWidth: 0
+        lineWidth: 0,
+        filledPolygon: false,
+        transparentSelection: false
       },
       state: {
         dirty: false,
         canRedo: false
-      }
+      },
+      refs: []
     }
   })
 });

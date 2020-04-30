@@ -18,6 +18,7 @@
 
         <color-menu />
         <line-width-menu />
+        <filled-polygon-menu />
     </div>
 </template>
 
@@ -39,6 +40,7 @@ import FilledPolygonTool from './filled-polygon-tool.vue';
 
 import ColorMenu from './color-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
+import FilledPolygonMenu from './filled-polygon-menu.vue';
 
     export default {
         data() {
@@ -60,7 +62,8 @@ import LineWidthMenu from './line-width-menu.vue';
             LineWidthTool,
             FilledPolygonTool,
             ColorMenu,
-            LineWidthMenu
+            LineWidthMenu,
+            FilledPolygonMenu
         }
     }
 </script>

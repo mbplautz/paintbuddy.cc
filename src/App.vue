@@ -198,7 +198,8 @@ export default {
                 _colorTo: null,
                 _lineWidthTo: null,
                 _touchFunctionsTo: null
-            }
+            },
+            refs: []
         };
         // Debug
         window.Vue = this.$root;
