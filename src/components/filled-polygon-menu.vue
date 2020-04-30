@@ -8,7 +8,7 @@
                 <div :class="['option', isFill() ? 'selected-option' : '']" @click="setFill(true)">
                     <div class="fill-option"></div>
                 </div>
-            </div>
+            ></div>
         </div>
     </popup-tool>
 </template>
@@ -50,7 +50,7 @@
         overflow-y: hidden;
     }
 
-    div.option div {
+    div.filled-polygon-select div.option div {
         border-radius: 25px;
         width: 40px;
         height: 40px;
@@ -60,11 +60,11 @@
         margin: 2px 3px 3px 3px;
     }
 
-    div.option div.no-fill-option {
+    div.filled-polygon-select div.option div.no-fill-option {
         margin-left: 2px;
     }
 
-    div.option div.fill-option {
+    div.filled-polygon-select div.option div.fill-option {
         background-color: #000000;
     }
 </style>

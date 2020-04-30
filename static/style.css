@@ -70,6 +70,16 @@ div.canvas {
         height: 72px;
     }
 
+    div.toolbar-button.option-tool div.option-icon {
+        width: 72px;
+        height: 36px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 32px;
+        height: 32px;
+    }
+
     div.toolbar-separator {
         width: 100px;
         height: 0px;
@@ -108,6 +118,16 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 48px;
         height: 48px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon {
+        width: 48px;
+        height: 24px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 20px;
+        height: 20px;
     }
 
     div.toolbar-separator {
@@ -149,6 +169,16 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool div.option-icon {
+        width: 24px;
+        height: 12px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 10px;
+        height: 10px;
+    }
+
     div.toolbar-separator {
         width: 32px;
         height: 0px;
@@ -186,6 +216,16 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 48px;
         height: 48px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon {
+        width: 48px;
+        height: 24px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 20px;
+        height: 20px;
     }
 
     div.toolbar-separator {
@@ -227,6 +267,16 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool div.option-icon {
+        width: 24px;
+        height: 12px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 10px;
+        height: 10px;
+    }
+
     div.toolbar-separator {
         width: 32px;
         height: 0px;
@@ -264,6 +314,16 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 36px;
         height: 36px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon {
+        width: 36px;
+        height: 18px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 14px;
+        height: 14px;
     }
 
     div.toolbar-separator {
@@ -305,6 +365,16 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool div.option-icon {
+        width: 24px;
+        height: 12px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 10px;
+        height: 10px;
+    }
+
     div.toolbar-separator {
         width: 32px;
         height: 0px;
@@ -342,6 +412,16 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 24px;
         height: 24px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon {
+        width: 24px;
+        height: 12px;
+    }
+
+    div.toolbar-button.option-tool div.option-icon div.option {
+        width: 10px;
+        height: 10px;
     }
 
     div.toolbar-separator {

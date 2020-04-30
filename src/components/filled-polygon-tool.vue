@@ -1,7 +1,14 @@
 <template>
     <div class="filled-polygon-tool">
-        <div class="toolbar-button" @click="click()" ref="toolbar-button">
-            Fill
+        <div class="toolbar-button option-tool" @click="click()" ref="toolbar-button">
+            <div class="filled-polygon-icon option-icon">
+                <div :class="['option', isFill() ? '' : 'selected-option']">
+                    <div class="no-fill-option"></div>
+                </div>
+                <div :class="['option', isFill() ? 'selected-option' : '']">
+                    <div class="fill-option"></div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -19,9 +26,6 @@
             isFill() {
                 return this.$root.paint.options.filledPolygon;
             },
-            setFill(val) {
-                this.$root.paint.options.filledPolygon = val;
-            },
             click() {
                 let name = 'filled-polygon-menu';
                 let element = this.$refs['toolbar-button'];
@@ -30,19 +34,38 @@
                     element 
                 });
             },
-            setWidth() {
-                try {
-                    let clientRect = this.$root.paint.refs['options-tool-ref'].getBoundingClientRect();
-                    this.iconWidth = clientRect.width;
-                } catch (e) {
-                    this.iconWidth = 50;
-                }
-                console.log(this.iconWidth);
-            }
         }
     }
 </script>
 
 <style>
+    div.filled-polygon-icon {
+        width: inherit;
+        height: 50%;
+        display: table;
+    }
+
+    div.filled-polygon-icon div.option {
+        display: table-cell;
+        width: 50%;
+        height: inherit;
+    }
+
+    div.filled-polygon-icon div.option.selected-option {
+        background-color: #cee9fe;
+    }
+
+    div.filled-polygon-icon div.option div {
+        border-radius: 25px;
+        width: inherit;
+        height: inherit;
+        border-style: solid;
+        border-color: #000000;
+        border-width: 1px;
+    }
+
+    div.filled-polygon-icon div.option div.fill-option {
+        background-color: #000000;
+    }
 
 </style>
