@@ -4,6 +4,8 @@
     const backgroundColor = '#ffffff';
     const edgeColor = '#000000';
 
+    const eraserToolContextRestoreDelay = 500;
+
     export default {
         props: {
             buttonGroup: {
@@ -21,7 +23,8 @@
                     lastX: 0,
                     lastY: 0
                 },
-                touch: {}
+                touch: {},
+                contextRestoreTimeoutArray: []
             }
         },
         extends: EditTool,
@@ -30,6 +33,8 @@
                 console.log('Eraser Tool clicked');
             },
             touchFunction(e) {
+                this.contextRestoreTimeoutArray.forEach(timeout => clearTimeout(timeout));
+                this.contextRestoreTimeoutArray.length = 0;
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 let context = this.$root.paint.canvas.activeContext;
@@ -107,11 +112,13 @@
                 toolContext.clearRect(0, 0, canvas.width, canvas.height); // Erase any trace of the tool
                 this.commitDrawing();
 
-
-                // Restore drawing canvas' color and line width
-                activeContext = this.$root.paint.canvas.activeContext;
-                activeContext.strokeStyle = this.$root.paint.options.color;
-                activeContext.lineWidth = this.$root.paint.options.lineWidth;
+                // Wait to restore contextso we don't create a race condition
+                this.contextRestoreTimeoutArray.push(setTimeout(() => {
+                    // Restore drawing canvas' color and line width
+                    activeContext = this.$root.paint.canvas.activeContext;
+                    activeContext.strokeStyle = this.$root.paint.options.color;
+                    activeContext.lineWidth = this.$root.paint.options.lineWidth;
+                }, eraserToolContextRestoreDelay));
 
             },
             drawTool(x, y, lineWidth, clear = true) {
