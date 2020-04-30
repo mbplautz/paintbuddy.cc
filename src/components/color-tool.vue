@@ -1,7 +1,7 @@
 <template>
     <div class="color-tool" @click="click()">
         <div class="toolbar-button">
-            <div class="color-icon" :style="$root.paint.options.color | colorFilter"></div>
+            <div class="color-icon" :style="$root.paint.options.color | colorFilter" ref="toolbar-button"></div>
         </div>
     </div>
 </template>
@@ -16,7 +16,7 @@
         methods: {
             click() {
                 let name = 'color-menu';
-                let element = document.querySelector('div.color-icon');
+                let element = this.$refs['toolbar-button'];
                 this.$root.$emit('show-popup', {
                     name,
                     element

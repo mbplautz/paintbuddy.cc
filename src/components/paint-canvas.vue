@@ -1,6 +1,6 @@
 <template>
     <div class="canvas">
-        <div class="canvas-child">
+        <div class="canvas-child" ref="canvas-div">
             <canvas class="undo-canvas"></canvas>
             <canvas class="draw-canvas"></canvas>
             <canvas class="active-canvas"></canvas>
@@ -77,14 +77,8 @@
                     // both sides the length of the longer device dimension, length or width
                 }
             },
-            getDrawCanvas() {
-                return document.querySelector('.draw-canvas');
-            },
-            getActiveCanvas() {
-                return document.querySelector('.active-canvas');
-            },
             getCanvasDiv() {
-                return document.querySelector('div.canvas-child');
+                return this.$refs['canvas-div'];
             },
             touchFunction(e) {
                 this.$root.paint.state.drawing = true;
