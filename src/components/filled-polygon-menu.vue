@@ -1,14 +1,12 @@
 <template>
     <popup-tool name="filled-polygon-menu">
-        <div class="clip-container">
-            <div class="filled-polygon-select">
-                <div :class="['option', isFill() ? '' : 'selected-option']" @click="setFill(false)">
-                    <div class="no-fill-option"></div>
-                </div>
-                <div :class="['option', isFill() ? 'selected-option' : '']" @click="setFill(true)">
-                    <div class="fill-option"></div>
-                </div>
-            ></div>
+        <div class="filled-polygon-select">
+            <div :class="['option', isFill() ? '' : 'selected-option']" @click="setFill(false)">
+                <div class="no-fill-option"></div>
+            </div>
+            <div :class="['option', isFill() ? 'selected-option' : '']" @click="setFill(true)">
+                <div class="fill-option"></div>
+            </div>
         </div>
     </popup-tool>
 </template>
@@ -34,8 +32,12 @@
 </script>
 
 <style>
+    div.filled-polygon-select {
+        display: table;
+    }
+
     div.filled-polygon-select div.option {
-        display: inline-block;
+        display: table-cell;
         width: 50px;
         height: 50px;
         background-color: #ffffff;
@@ -45,11 +47,6 @@
         background-color: #cee9fe;
     }
 
-    div.clip-container {
-        height: 50px;
-        overflow-y: hidden;
-    }
-
     div.filled-polygon-select div.option div {
         border-radius: 25px;
         width: 40px;
@@ -57,11 +54,7 @@
         border-style: solid;
         border-color: #000000;
         border-width: 3px;
-        margin: 2px 3px 3px 3px;
-    }
-
-    div.filled-polygon-select div.option div.no-fill-option {
-        margin-left: 2px;
+        margin: 3px 3px 3px 3px;
     }
 
     div.filled-polygon-select div.option div.fill-option {
