@@ -13,7 +13,6 @@
 
 <script>
     import PopupTool from './popup-tool.vue';
-    import LineWidthOption from './line-width-option.vue';
 
     export default {
         components: {
