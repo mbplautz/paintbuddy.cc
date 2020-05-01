@@ -63,6 +63,8 @@ import Shape from '../module/shape';
                     // For the line tool, we only use the first touch if there are multiple touches
                     this.touch.initialX = e.touches[0].clientX - bounds.left;
                     this.touch.initialY = e.touches[0].clientY - bounds.top;
+                    this.touch.finalX = this.touch.initialX;
+                    this.touch.finalY = this.touch.initialY;
                     x = this.touch.initialX;
                     y = this.touch.initialY;
                 }
