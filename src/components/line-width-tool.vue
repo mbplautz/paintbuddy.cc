@@ -34,3 +34,13 @@
         }
     }
 </script>
+
+<style>
+    div.line-width-tool div.toolbar-button {
+        overflow-y: hidden;
+    }
+
+    div.line-width-tool div.toolbar-button div.line-width-icon {
+        margin-top: 4px;
+    }
+</style>

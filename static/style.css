@@ -70,6 +70,10 @@ div.canvas {
         height: 72px;
     }
 
+    div.toolbar-button.option-tool {
+        height: 60px;
+    }
+
     div.toolbar-button.option-tool div.option-icon {
         width: 72px;
         height: 36px;
@@ -118,6 +122,10 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 48px;
         height: 48px;
+    }
+
+    div.toolbar-button.option-tool {
+        height: 40px;
     }
 
     div.toolbar-button.option-tool div.option-icon {
@@ -169,6 +177,10 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool {
+        height: 20px;
+    }
+
     div.toolbar-button.option-tool div.option-icon {
         width: 24px;
         height: 12px;
@@ -216,6 +228,10 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 48px;
         height: 48px;
+    }
+
+    div.toolbar-button.option-tool {
+        height: 40px;
     }
 
     div.toolbar-button.option-tool div.option-icon {
@@ -267,6 +283,10 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool {
+        height: 20px;
+    }
+
     div.toolbar-button.option-tool div.option-icon {
         width: 24px;
         height: 12px;
@@ -314,6 +334,10 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 36px;
         height: 36px;
+    }
+
+    div.toolbar-button.option-tool {
+        height: 30px;
     }
 
     div.toolbar-button.option-tool div.option-icon {
@@ -365,6 +389,10 @@ div.canvas {
         height: 24px;
     }
 
+    div.toolbar-button.option-tool {
+        height: 20px;
+    }
+
     div.toolbar-button.option-tool div.option-icon {
         width: 24px;
         height: 12px;
@@ -412,6 +440,10 @@ div.canvas {
     div.toolbar-button div.svg-container {
         width: 24px;
         height: 24px;
+    }
+
+    div.toolbar-button.option-tool {
+        height: 20px;
     }
 
     div.toolbar-button.option-tool div.option-icon {

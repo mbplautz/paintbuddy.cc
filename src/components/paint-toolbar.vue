@@ -15,10 +15,12 @@
         <toolbar-separator />
         <line-width-tool />
         <filled-polygon-tool />
+        <transparent-selection-tool />
 
         <color-menu />
         <line-width-menu />
         <filled-polygon-menu />
+        <transparent-selection-menu />
     </div>
 </template>
 
@@ -37,10 +39,12 @@ import FillTool from './fill-tool.vue';
 import EraserTool from './eraser-tool.vue';
 import LineWidthTool from './line-width-tool.vue';
 import FilledPolygonTool from './filled-polygon-tool.vue';
+import TransparentSelectionTool from './transparent-selection-tool.vue';
 
 import ColorMenu from './color-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
 import FilledPolygonMenu from './filled-polygon-menu.vue';
+import TransparentSelectionMenu from './transparent-selection-menu.vue';
 
     export default {
         data() {
@@ -61,9 +65,11 @@ import FilledPolygonMenu from './filled-polygon-menu.vue';
             EraserTool,
             LineWidthTool,
             FilledPolygonTool,
+            TransparentSelectionTool,
             ColorMenu,
             LineWidthMenu,
-            FilledPolygonMenu
+            FilledPolygonMenu,
+            TransparentSelectionMenu
         }
     }
 </script>

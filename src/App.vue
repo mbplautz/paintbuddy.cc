@@ -23,7 +23,7 @@ export default {
             options: {
                 color: '#000000',
                 lineWidth: 3.0,
-                transparentSelection: true,
+                transparentSelection: false,
                 filledPolygon: false
             },
             canvas: {
@@ -240,15 +240,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    .paint-background {
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: -1;
-        background-color: #fff;
-    }
-</style>
