@@ -9,6 +9,8 @@
 import PaintToolbar from './components/paint-toolbar.vue';
 import PaintCanvas from './components/paint-canvas.vue';
 
+import Shape from './module/shape';
+
 export default {
     data() {
         return {};
@@ -24,7 +26,8 @@ export default {
                 color: '#000000',
                 lineWidth: 3.0,
                 transparentSelection: false,
-                filledPolygon: false
+                filledPolygon: false,
+                selectedShape: Object.keys(Shape)[0] // The default is the first one
             },
             canvas: {
                 toolElement: null,

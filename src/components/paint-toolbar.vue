@@ -10,6 +10,7 @@
         <line-tool buttonGroup="edit-tools-group" />
         <rectangle-tool buttonGroup="edit-tools-group" />
         <ellipse-tool buttonGroup="edit-tools-group" />
+        <shape-tool buttonGroup="edit-tools-group" />
         <fill-tool buttonGroup="edit-tools-group" />
         <eraser-tool buttonGroup="edit-tools-group" />
         <toolbar-separator />
@@ -18,6 +19,7 @@
         <transparent-selection-tool />
 
         <color-menu />
+        <shape-menu />
         <line-width-menu />
         <filled-polygon-menu />
         <transparent-selection-menu />
@@ -35,6 +37,7 @@ import BrushTool from './brush-tool.vue';
 import LineTool from './line-tool.vue';
 import RectangleTool from './rectangle-tool.vue';
 import EllipseTool from './ellipse-tool.vue';
+import ShapeTool from './shape-tool.vue';
 import FillTool from './fill-tool.vue';
 import EraserTool from './eraser-tool.vue';
 import LineWidthTool from './line-width-tool.vue';
@@ -42,6 +45,7 @@ import FilledPolygonTool from './filled-polygon-tool.vue';
 import TransparentSelectionTool from './transparent-selection-tool.vue';
 
 import ColorMenu from './color-menu.vue';
+import ShapeMenu from './shape-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
 import FilledPolygonMenu from './filled-polygon-menu.vue';
 import TransparentSelectionMenu from './transparent-selection-menu.vue';
@@ -61,12 +65,14 @@ import TransparentSelectionMenu from './transparent-selection-menu.vue';
             LineTool,
             RectangleTool,
             EllipseTool,
+            ShapeTool,
             FillTool,
             EraserTool,
             LineWidthTool,
             FilledPolygonTool,
             TransparentSelectionTool,
             ColorMenu,
+            ShapeMenu,
             LineWidthMenu,
             FilledPolygonMenu,
             TransparentSelectionMenu

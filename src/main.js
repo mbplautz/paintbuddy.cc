@@ -17,7 +17,8 @@ new Vue({
         color: '',
         lineWidth: 0,
         filledPolygon: false,
-        transparentSelection: false
+        transparentSelection: false,
+        selectedShape: ''
       },
       state: {
         dirty: false,
