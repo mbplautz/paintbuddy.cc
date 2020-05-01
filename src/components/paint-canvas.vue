@@ -65,6 +65,7 @@
                         let canvas = document.querySelector(`canvas.${name}-canvas`);
                         canvas.width = clientRect.width;
                         canvas.height = clientRect.height;
+                        canvas.getContext('2d').lineCap = 'round';
                     });
                     drawContext.fillStyle = '#ffffff'; // TODO: Centralize bacgkround color
                     drawContext.beginPath();
