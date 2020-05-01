@@ -17,7 +17,7 @@
 
     export default {
         components: {
-            PopupTool,
+            PopupTool
         },
         methods: {
             isFill() {

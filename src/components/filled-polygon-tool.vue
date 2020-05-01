@@ -15,13 +15,6 @@
 
 <script>
     export default {
-        data() {
-            return {
-                iconWidth: 50
-            }
-        },
-        mounted() {
-        },
         methods: {
             isFill() {
                 return this.$root.paint.options.filledPolygon;
