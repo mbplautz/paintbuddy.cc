@@ -26,6 +26,7 @@
             setTransparentSelection(val) {
                 this.$root.paint.options.transparentSelection = val;
                 this.$root.$emit('hide-popup', 'transparent-selection-menu');
+                this.$root.$emit('update-selection');
             }
         }
     };

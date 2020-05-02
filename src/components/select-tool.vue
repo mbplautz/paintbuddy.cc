@@ -59,6 +59,7 @@ import EditTool from './edit-tool.vue';
         extends: EditTool,
         mounted() {
             this.$root.$on('clear-selection', this.clearSelection);
+            this.$root.$on('update-selection', this.updateSelection);
             this.$root.paint.function.moveTouch = this.moveTouchFunction;
             this.$root.paint.function.moveDrag = this.moveDragFunction;
             this.$root.paint.function.moveRelease = this.moveReleaseFunction;
@@ -171,8 +172,10 @@ import EditTool from './edit-tool.vue';
                 this.originalPosition.x = this.$root.paint.state.selection.x;
                 this.originalPosition.y = this.$root.paint.state.selection.y;
                 let drawContext = this.$root.paint.canvas.drawContext;
+                let drawCanvas = this.$root.paint.canvas.drawElement;
                 this.originalSelectionData = drawContext.getImageData(initialX, initialY, width, height);
                 this.selectionData = drawContext.getImageData(initialX, initialY, width, height);
+                this.drawingData = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
                 this.invertSelectionBorder();
                 context.putImageData(this.selectionData, initialX, initialY);
             },
@@ -222,6 +225,7 @@ import EditTool from './edit-tool.vue';
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 context.fillStyle = backgroundColor;
                 context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                this.setSelectionTransparency();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
             moveReleaseFunction(e) {
@@ -246,10 +250,23 @@ import EditTool from './edit-tool.vue';
                 this.$root.paint.state.selection.y = this.selectionStart.y + deltaY;
                 let context = this.$root.paint.canvas.toolContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                this.invertSelectionBorder();
                 context.fillStyle = backgroundColor;
                 context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                this.setSelectionTransparency();
+                this.invertSelectionBorder();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
+            },
+            updateSelection() {
+                if (this.$root.paint.state.selection) {
+                    let canvas = this.$root.paint.canvas.toolElement;
+                    let context = this.$root.paint.canvas.toolContext;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.fillStyle = backgroundColor;
+                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                    this.setSelectionTransparency();
+                    this.invertSelectionBorder();
+                    context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
+                }
             },
             clearSelection() {
                 if (this.$root.paint.state.selection) {
@@ -308,6 +325,61 @@ import EditTool from './edit-tool.vue';
                         y += direction.deltaY;
                     } while(direction.bound(x, y));
                 });
+            },
+            setSelectionTransparency() {
+                if (this.$root.paint.options.transparentSelection) {
+                    this.selectionData = new ImageData(
+                        Uint8ClampedArray.from(this.originalSelectionData.data), 
+                        this.originalSelectionData.width,
+                        this.originalSelectionData.height
+                    );
+                    let drawCanvas = this.$root.paint.canvas.drawElement;
+                    let drawWidth = drawCanvas.width;
+                    let drawHeight = drawCanvas.height;
+                    let width = this.$root.paint.state.selection.width;
+                    let height = this.$root.paint.state.selection.height;
+                    let getDrawPointOffset = (x, y) => 4 * (y * drawWidth + x);
+                    let getPointOffset = (x, y) => 4 * (y * width + x);
+                    let selectionX = this.$root.paint.state.selection.x;
+                    let selectionY = this.$root.paint.state.selection.y;
+                    let originalPositionX = this.originalPosition.x;
+                    let originalPositionY = this.originalPosition.y;
+                    let drawData = this.drawingData.data;
+                    let data = this.selectionData.data;
+                    let x, y, drawX, drawY;
+                    let offset, drawOffset;
+                    let inSelectionBounds;
+                    for (y = 0; y < height; y++) {
+                        for (x = 0; x < width; x++) {
+                            drawX = selectionX + x;
+                            drawY = selectionY + y;
+                            if (drawX >= 0 && drawY >= 0 && drawX < drawWidth && drawY < drawHeight) {
+                                offset = getPointOffset(x, y);
+                                inSelectionBounds = 
+                                    drawX >= originalPositionX && 
+                                    drawY >= originalPositionY && 
+                                    drawX < originalPositionX + width && 
+                                    drawY < originalPositionY + height;
+                                if (this.isBackgroundColor(data, offset) && !inSelectionBounds) {
+                                    drawOffset = getDrawPointOffset(drawX, drawY);
+                                    data[offset] = drawData[drawOffset];
+                                    data[offset + 1] = drawData[drawOffset + 1];
+                                    data[offset + 2] = drawData[drawOffset + 2];
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    this.selectionData = new ImageData(
+                        Uint8ClampedArray.from(this.originalSelectionData.data), 
+                        this.originalSelectionData.width,
+                        this.originalSelectionData.height
+                    );
+                }
+            },
+            isBackgroundColor(array, offset) {
+                return array[offset] === 255 && array[offset + 1] === 255 && array[offset + 2] === 255;
             },
             buildDashPattern() {
                 let context = this.$root.paint.canvas.toolContext;
