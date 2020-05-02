@@ -234,6 +234,5 @@
         position: absolute;
         z-index: 3;
         cursor: move;
-        border: 1px dotted black;
     }
 </style>

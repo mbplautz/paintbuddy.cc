@@ -51,7 +51,9 @@ import EditTool from './edit-tool.vue';
                     y: 0
                 },
                 dashPattern: null,
-                selectionData: null
+                selectionData: null,
+                originalSelectionData: null,
+                drawingData: null
             }
         },
         extends: EditTool,
@@ -169,12 +171,12 @@ import EditTool from './edit-tool.vue';
                 this.originalPosition.x = this.$root.paint.state.selection.x;
                 this.originalPosition.y = this.$root.paint.state.selection.y;
                 let drawContext = this.$root.paint.canvas.drawContext;
+                this.originalSelectionData = drawContext.getImageData(initialX, initialY, width, height);
                 this.selectionData = drawContext.getImageData(initialX, initialY, width, height);
-                context.putImageData(this.selectionData, initialX, initialY);
                 this.invertSelectionBorder();
+                context.putImageData(this.selectionData, initialX, initialY);
             },
             moveTouchFunction(e) {
-                //console.log('move touch')
                 let canvas = this.$root.paint.canvas.toolElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -266,7 +268,46 @@ import EditTool from './edit-tool.vue';
                 }
             },
             invertSelectionBorder() {
-
+                let width = this.$root.paint.state.selection.width;
+                let height = this.$root.paint.state.selection.height;
+                let getPointOffset = (x, y) => 4 * (y * width + x);
+                let data = this.selectionData.data;
+                let directionArray = [
+                    {
+                        deltaX: 1,
+                        deltaY: 0,
+                        bound: (x, y) => x < width - 1
+                    },
+                    {
+                        deltaX: 0,
+                        deltaY: 1,
+                        bound: (x, y) => y < height - 1
+                    },
+                    {
+                        deltaX: -1,
+                        deltaY: 0,
+                        bound: (x, y) => x > 0
+                    },
+                    {
+                        deltaX: 0,
+                        deltaY: -1,
+                        bound: (x, y) => y > 0
+                    }
+                ];
+                let x = 0, y = 0, invert = true, offset;
+                directionArray.forEach(direction => {
+                    do {
+                        offset = getPointOffset(x, y);
+                        if (invert) {
+                            data[offset] = 255 - data[offset];
+                            data[offset + 1] = 255 - data[offset + 1];
+                            data[offset + 2] = 255 - data[offset + 2];
+                        }
+                        invert = !invert;
+                        x += direction.deltaX;
+                        y += direction.deltaY;
+                    } while(direction.bound(x, y));
+                });
             },
             buildDashPattern() {
                 let context = this.$root.paint.canvas.toolContext;
