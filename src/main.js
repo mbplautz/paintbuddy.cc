@@ -22,7 +22,8 @@ new Vue({
       },
       state: {
         dirty: false,
-        canRedo: false
+        canRedo: false,
+        selection: null
       },
       refs: []
     }

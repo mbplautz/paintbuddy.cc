@@ -12,6 +12,7 @@ import ActionButton from './action-button.vue';
         methods: {
             action() {
                 console.log('Undo clicked');
+                this.$root.$emit('clear-selection');
                 if (this.$root.paint.state.dirty) {
                     this.$root.paint.state.undo();
                 }

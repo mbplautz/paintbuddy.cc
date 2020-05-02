@@ -10,8 +10,8 @@
                 @mousemove="dragFunction"
                 @touchmove="dragFunction"
                 @mouseup="releaseFunction"
-                @touchend="releaseFunction"></canvas>
-
+                @touchend="releaseFunction">
+            </canvas>
         </div>
         <div class="paint-cover-light">
         </div>
@@ -23,6 +23,15 @@
                 </div>
             </div>
         </div>
+        <div class="selection"
+            @mousedown="moveTouchFunction"
+            @touchstart="moveTouchFunction"
+            @mousemove="moveDragFunction"
+            @touchmove="moveDragFunction"
+            @mouseup="moveReleaseFunction"
+            @touchend="moveReleaseFunction"
+            :style="$root.paint.state.selection | selectionFilter">
+        </div>
     </div>
 </template>
 
@@ -30,13 +39,13 @@
     export default {
         data() {
             return {
-                initialized: false,
-                mouseDown: false
+                mouseDown: false,
+                moveMouseDown: false,
+                selectionMoving: false // This prevents quick drag off from the selection acting as dragging on the canvas
             }
         },
         mounted() {
             this.createCanvasSet();
-//            this.initialized = true;
             window.addEventListener('resize', this.resizeCanvasHandler);
         },
         methods: {
@@ -82,6 +91,7 @@
                 return this.$refs['canvas-div'];
             },
             touchFunction(e) {
+                if (this.selectionMoving) return;
                 this.$root.paint.state.drawing = true;
                 if (e.type === 'mousedown') {
                     this.mouseDown = true;
@@ -89,17 +99,52 @@
                 this.$root.paint.function.touch(e);
             },
             dragFunction(e) {
+                if (this.selectionMoving) return; 
                 if (e.type === 'mousemove' && !this.mouseDown) return;
                 e.preventDefault();
                 this.$root.paint.function.drag(e);
             },
             releaseFunction(e) {
+                if (this.selectionMoving) {
+                    this.moveReleaseFunction(e);
+                }
+                else {
+                    if (e.type === 'mouseup') {
+                        this.mouseDown = false;
+                    }
+                    this.$root.paint.function.release(e);
+                    this.$root.paint.state.drawing = false;
+                    this.$root.$emit('drawing-released');
+                }
+            },
+            moveTouchFunction(e) {
+                if (e.type === 'mousedown') {
+                    this.mouseDown = true;
+                }
+                this.selectionMoving = true;
+                this.$root.paint.function.moveTouch(e);
+            },
+            moveDragFunction(e) {
+                if (e.type === 'mousemove' && !this.mouseDown) return;
+                e.preventDefault();
+                this.$root.paint.function.moveDrag(e);
+            },
+            moveReleaseFunction(e) {
                 if (e.type === 'mouseup') {
                     this.mouseDown = false;
                 }
-                this.$root.paint.function.release(e);
-                this.$root.paint.state.drawing = false;
-                this.$root.$emit('drawing-released');
+                this.selectionMoving = false;
+                this.$root.paint.function.moveRelease(e);
+            }
+        },
+        filters: {
+            selectionFilter(val) {
+                if (val) {
+                    return `left: ${val.x}px; top: ${val.y}px; width: ${val.width}px; height: ${val.height}px;`
+                }
+                else {
+                    return '';
+                }
             }
         }
     }
@@ -183,5 +228,12 @@
     div.paint-cover-heavy div.outer div.inner-container i {
         font-size: 72px;
         margin: 0 auto;
+    }
+
+    div.canvas div.selection {
+        position: absolute;
+        z-index: 3;
+        cursor: move;
+        border: 1px dotted black;
     }
 </style>

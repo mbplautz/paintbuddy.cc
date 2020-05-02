@@ -20,7 +20,10 @@ export default {
             function: {
                 touch: () => {},
                 drag: () => {},
-                release: () => {}
+                release: () => {},
+                moveTouch: () => {},
+                moveDrag: () => {},
+                moveRelease: () => {}
             },
             options: {
                 color: '#000000',
@@ -196,6 +199,7 @@ export default {
                 drawing: false,
                 dirty: false,
                 canRedo: false,
+                selection: null,
                 _undoQueue: [],
                 _redoQueue: [],
                 _colorTo: null,
