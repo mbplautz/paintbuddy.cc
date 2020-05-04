@@ -1,7 +1,7 @@
 <template>
-    <div :class="name" @click="click()">
+    <div :class="name" @click="(isEnabled() ? click : noop)()">
         <div :class="['toolbar-button', selected ? 'selected-item' : '']">
-            <i :class="icon" :style="isEnabled() ? '' : 'color: #bbb;'"></i>
+            <i :class="icon" :style="isEnabled() ? '' : 'color: #bbb;'" ref="icon-ref"></i>
         </div>
     </div>
 </template>
@@ -16,6 +16,9 @@
         methods: {
             isEnabled() {
                 return true;
+            },
+            noop() {
+
             }
         }
     }

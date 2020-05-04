@@ -200,6 +200,7 @@ export default {
                 dirty: false,
                 canRedo: false,
                 selection: null,
+                copySelection: null,
                 _undoQueue: [],
                 _redoQueue: [],
                 _colorTo: null,

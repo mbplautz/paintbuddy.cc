@@ -1,5 +1,5 @@
 <script>
-import EditTool from './edit-tool.vue';
+    import EditTool from './edit-tool.vue';
 
     // Set dash length here
     const dashLength = 5;
@@ -18,6 +18,9 @@ import EditTool from './edit-tool.vue';
     img.width = doubleDashLength;
 
     const backgroundColor = '#ffffff'; // TODO: Centralize background color
+
+    const pastePointStart = { x: 100, y: 100 };
+    const pastePointStep = { deltaX: 50, deltaY: 50 };
 
     export default {
         props: {
@@ -48,18 +51,25 @@ import EditTool from './edit-tool.vue';
                 },
                 originalPosition: {
                     x: 0,
-                    y: 0
+                    y: 0,
+                    width: 0,
+                    height: 0
                 },
                 dashPattern: null,
                 selectionData: null,
                 originalSelectionData: null,
-                drawingData: null
+                pasted: false,
+                drawingData: null,
+                pastePoint: Object.assign({}, pastePointStart)
             }
         },
         extends: EditTool,
         mounted() {
             this.$root.$on('clear-selection', this.clearSelection);
             this.$root.$on('update-selection', this.updateSelection);
+            this.$root.$on('copy-selection', this.copySelection);
+            this.$root.$on('cut-selection', this.cutSelection);
+            this.$root.$on('paste-selection', this.pasteSelection);
             this.$root.paint.function.moveTouch = this.moveTouchFunction;
             this.$root.paint.function.moveDrag = this.moveDragFunction;
             this.$root.paint.function.moveRelease = this.moveReleaseFunction;
@@ -71,9 +81,12 @@ import EditTool from './edit-tool.vue';
             childDeselect() {
                 console.log('Select tool deselect');
                 this.clearSelection();
+                let undoContext = this.$root.paint.canvas.undoContext;
+                undoContext.fillStyle = this.$root.paint.options.color;
             },
             touchFunction(e) {
                 this.clearSelection();
+                this.pasted = false;
                 let canvas = this.$root.paint.canvas.toolElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -171,6 +184,8 @@ import EditTool from './edit-tool.vue';
                 };
                 this.originalPosition.x = this.$root.paint.state.selection.x;
                 this.originalPosition.y = this.$root.paint.state.selection.y;
+                this.originalPosition.width = this.$root.paint.state.selection.width;
+                this.originalPosition.height = this.$root.paint.state.selection.height;
                 let drawContext = this.$root.paint.canvas.drawContext;
                 let drawCanvas = this.$root.paint.canvas.drawElement;
                 this.originalSelectionData = drawContext.getImageData(initialX, initialY, width, height);
@@ -223,8 +238,10 @@ import EditTool from './edit-tool.vue';
                 this.$root.paint.state.selection.y = this.selectionStart.y + deltaY;
                 let context = this.$root.paint.canvas.toolContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                context.fillStyle = backgroundColor;
-                context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                if (!this.pasted) {
+                    context.fillStyle = backgroundColor;
+                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                }
                 this.setSelectionTransparency();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
@@ -250,19 +267,26 @@ import EditTool from './edit-tool.vue';
                 this.$root.paint.state.selection.y = this.selectionStart.y + deltaY;
                 let context = this.$root.paint.canvas.toolContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                context.fillStyle = backgroundColor;
-                context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                if (!this.pasted) {
+                    context.fillStyle = backgroundColor;
+                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                }
                 this.setSelectionTransparency();
                 this.invertSelectionBorder();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
-            updateSelection() {
+            updateSelection(transform) {
+                if (transform) {
+                    this.originalSelectionData = transform(this.originalSelectionData);
+                }
                 if (this.$root.paint.state.selection) {
                     let canvas = this.$root.paint.canvas.toolElement;
                     let context = this.$root.paint.canvas.toolContext;
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.fillStyle = backgroundColor;
-                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                    if (!this.pasted) {
+                        context.fillStyle = backgroundColor;
+                        context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                    }
                     this.setSelectionTransparency();
                     this.invertSelectionBorder();
                     context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
@@ -274,14 +298,103 @@ import EditTool from './edit-tool.vue';
                     let undoCanvas = this.$root.paint.canvas.undoElement;
                     let undoContext = this.$root.paint.canvas.undoContext;
                     undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
-                    undoContext.fillStyle = backgroundColor;
-                    undoContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.$root.paint.state.selection.width, this.$root.paint.state.selection.height);
+                    if (!this.pasted) {
+                        undoContext.fillStyle = backgroundColor;
+                        undoContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                    }
+                    this.setSelectionTransparency();
                     undoContext.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
                     this.$root.paint.state.selection = null;
                     let canvas = this.$root.paint.canvas.toolElement;
                     let context = this.$root.paint.canvas.toolContext;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     this.commitDrawing();
+                }
+            },
+            copySelection() {
+                if (this.$root.paint.state.selection) {
+                    this.$root.paint.state.copySelection = this.originalSelectionData;
+                }
+            },
+            cutSelection() {
+                this.copySelection();
+                let canvas = this.$root.paint.canvas.undoElement;
+                let context = this.$root.paint.canvas.undoContext;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                if (!this.pasted)  {
+                    let x = this.originalPosition.x;
+                    let y = this.originalPosition.y;
+                    let width = this.originalPosition.width;
+                    let height = this.originalPosition.height;
+                    context.fillStyle = backgroundColor;
+                    context.fillRect(x, y, width, height);
+                }
+                this.$root.paint.state.selection = null;
+                canvas = this.$root.paint.canvas.toolElement;
+                context = this.$root.paint.canvas.toolContext;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                this.commitDrawing();
+            },
+            pasteSelection() {
+                if (this.$root.paint.state.copySelection) {
+                    this.clearSelection();
+                    this.pasted = true;
+                    let copySelection = this.$root.paint.state.copySelection;
+                    let x = this.pastePoint.x;
+                    let y = this.pastePoint.y;
+                    let width = copySelection.width;
+                    let height = copySelection.height;
+                    let x2 = x + width;
+                    let y2 = y + width;
+                    // Use the canvas div size in the window view instead of the actual canvas size for the paste boundaries
+                    // Note that the canvas div size can never be larger than the canvases
+                    let canvasDiv = this.$root.paint.canvas.toolElement.parentElement.getBoundingClientRect();
+                    let context = this.$root.paint.canvas.toolContext;
+                    // Ensure the pasted image doesn't go over off to the side of the canvas
+                    if (x2 >= canvasDiv.width) {
+                        x -= (x2 - width);
+                        // But if it is does, set it to 0
+                        if (x < 0) {
+                            x = 0;
+                        }
+                    }
+                    if (y2 >= canvasDiv.height) {
+                        y -= (y2 - width);
+                        if (y < 0) {
+                            y = 0;
+                        }
+                    }
+                    // Update paste point
+                    this.pastePoint.x += pastePointStep.deltaX;
+                    this.pastePoint.y += pastePointStep.deltaY;
+                    if (this.pastePoint.x + width > canvasDiv.width) {
+                        this.pastePoint.x = pastePointStart.x;
+                    }
+                    if (this.pastePoint.y + height > canvasDiv.height) {
+                        this.pastePoint.y = pastePointStart.y;
+                    }
+                    // Update the selection
+                    this.originalSelectionData = copySelection;
+                    this.selectionData = new ImageData(
+                        Uint8ClampedArray.from(copySelection.data),
+                        width,
+                        height
+                    );
+                    this.$root.paint.state.selection = {
+                        x, 
+                        y,
+                        width,
+                        height
+                    };
+                    this.originalPosition = {
+                        x,
+                        y,
+                        width,
+                        height
+                    };
+                    this.setSelectionTransparency();
+                    this.invertSelectionBorder();
+                    context.putImageData(this.selectionData, x, y);
                 }
             },
             invertSelectionBorder() {

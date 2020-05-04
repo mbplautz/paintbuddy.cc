@@ -3,6 +3,7 @@
         <menu-button />
         <undo-button />
         <redo-button />
+        <copy-menu-tool />
         <toolbar-separator />
         <color-tool />
         <select-tool buttonGroup="edit-tools-group" />
@@ -18,6 +19,7 @@
         <filled-polygon-tool />
         <transparent-selection-tool />
 
+        <copy-menu />
         <color-menu />
         <shape-menu />
         <line-width-menu />
@@ -30,6 +32,7 @@
 import MenuButton from './menu-button.vue';
 import UndoButton from './undo-button.vue';
 import RedoButton from './redo-button.vue';
+import CopyMenuTool from './copy-menu-tool.vue';
 import ToolbarSeparator from './toolbar-separator.vue';
 import ColorTool from './color-tool.vue';
 import SelectTool from './select-tool.vue';
@@ -44,6 +47,7 @@ import LineWidthTool from './line-width-tool.vue';
 import FilledPolygonTool from './filled-polygon-tool.vue';
 import TransparentSelectionTool from './transparent-selection-tool.vue';
 
+import CopyMenu from './copy-menu.vue';
 import ColorMenu from './color-menu.vue';
 import ShapeMenu from './shape-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
@@ -58,6 +62,7 @@ import TransparentSelectionMenu from './transparent-selection-menu.vue';
             MenuButton,
             UndoButton,
             RedoButton,
+            CopyMenuTool,
             ToolbarSeparator,
             ColorTool,
             SelectTool,
@@ -71,6 +76,7 @@ import TransparentSelectionMenu from './transparent-selection-menu.vue';
             LineWidthTool,
             FilledPolygonTool,
             TransparentSelectionTool,
+            CopyMenu,
             ColorMenu,
             ShapeMenu,
             LineWidthMenu,
