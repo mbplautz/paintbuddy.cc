@@ -92,6 +92,7 @@
             },
             touchFunction(e) {
                 if (this.selectionMoving) return;
+                this.$root.$emit('drawing-started');
                 this.$root.paint.state.drawing = true;
                 if (e.type === 'mousedown') {
                     this.mouseDown = true;

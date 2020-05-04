@@ -66,6 +66,7 @@
         extends: EditTool,
         mounted() {
             this.$root.$on('clear-selection', this.clearSelection);
+            this.$root.$on('drawing-started', this.clearSelection);
             this.$root.$on('update-selection', this.updateSelection);
             this.$root.$on('copy-selection', this.copySelection);
             this.$root.$on('cut-selection', this.cutSelection);
@@ -191,7 +192,8 @@
                 this.originalSelectionData = drawContext.getImageData(initialX, initialY, width, height);
                 this.selectionData = drawContext.getImageData(initialX, initialY, width, height);
                 this.drawingData = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
-                this.invertSelectionBorder();
+                this.setSelectionTransparency();
+                this.invertSelectionBorder(true);
                 context.putImageData(this.selectionData, initialX, initialY);
             },
             moveTouchFunction(e) {
@@ -212,9 +214,13 @@
                 this.selectionStart.x = this.$root.paint.state.selection.x;
                 this.selectionStart.y = this.$root.paint.state.selection.y;
                 let context = this.$root.paint.canvas.toolContext;
-                this.invertSelectionBorder();
+                this.invertSelectionBorder(false);
             },
             moveDragFunction(e) {
+                if (window.stopme) {
+                    window.stopme = false;
+                    debugger;
+                }
                 let canvas = this.$root.paint.canvas.toolElement;
                 let bounds = canvas.getBoundingClientRect();
                 let initialX, initialY, currentX, currentY;
@@ -242,7 +248,7 @@
                     context.fillStyle = backgroundColor;
                     context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
-                this.setSelectionTransparency();
+                // this.setSelectionTransparency();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
             moveReleaseFunction(e) {
@@ -271,13 +277,19 @@
                     context.fillStyle = backgroundColor;
                     context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
-                this.setSelectionTransparency();
-                this.invertSelectionBorder();
+                // this.setSelectionTransparency();
+                this.invertSelectionBorder(true);
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
             updateSelection(transform) {
                 if (transform) {
                     this.originalSelectionData = transform(this.originalSelectionData);
+                    this.selectionData = new ImageData(
+                        Uint8ClampedArray.from(this.originalSelectionData.data),
+                        this.originalSelectionData.width,
+                        this.originalSelectionData.height
+                    );
+                    this.invertSelectionBorder(true);
                 }
                 if (this.$root.paint.state.selection) {
                     let canvas = this.$root.paint.canvas.toolElement;
@@ -288,13 +300,12 @@
                         context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                     }
                     this.setSelectionTransparency();
-                    this.invertSelectionBorder();
                     context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
                 }
             },
             clearSelection() {
                 if (this.$root.paint.state.selection) {
-                    this.invertSelectionBorder();
+                    this.invertSelectionBorder(false);
                     let undoCanvas = this.$root.paint.canvas.undoElement;
                     let undoContext = this.$root.paint.canvas.undoContext;
                     undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
@@ -393,15 +404,16 @@
                         height
                     };
                     this.setSelectionTransparency();
-                    this.invertSelectionBorder();
+                    this.invertSelectionBorder(true);
                     context.putImageData(this.selectionData, x, y);
                 }
             },
-            invertSelectionBorder() {
+            invertSelectionBorder(enable) {
                 let width = this.$root.paint.state.selection.width;
                 let height = this.$root.paint.state.selection.height;
                 let getPointOffset = (x, y) => 4 * (y * width + x);
                 let data = this.selectionData.data;
+                let originalData = this.originalSelectionData.data;
                 let directionArray = [
                     {
                         deltaX: 1,
@@ -429,9 +441,18 @@
                     do {
                         offset = getPointOffset(x, y);
                         if (invert) {
-                            data[offset] = 255 - data[offset];
-                            data[offset + 1] = 255 - data[offset + 1];
-                            data[offset + 2] = 255 - data[offset + 2];
+                            if (enable) {
+                                data[offset] = 255 - originalData[offset];
+                                data[offset + 1] = 255 - originalData[offset + 1];
+                                data[offset + 2] = 255 - originalData[offset + 2];
+                                data[offset + 3] = 255; // Keep the border opaque
+                            }
+                            else {
+                                data[offset] = originalData[offset];
+                                data[offset + 1] = originalData[offset + 1];
+                                data[offset + 2] = originalData[offset + 2];
+                                data[offset + 3] = originalData[offset + 3];
+                            }
                         }
                         invert = !invert;
                         x += direction.deltaX;
@@ -441,12 +462,12 @@
             },
             setSelectionTransparency() {
                 if (this.$root.paint.options.transparentSelection) {
-                    this.selectionData = new ImageData(
-                        Uint8ClampedArray.from(this.originalSelectionData.data), 
-                        this.originalSelectionData.width,
-                        this.originalSelectionData.height
-                    );
-                    let drawCanvas = this.$root.paint.canvas.drawElement;
+                    // this.selectionData = new ImageData(
+                    //     Uint8ClampedArray.from(this.originalSelectionData.data), 
+                    //     this.originalSelectionData.width,
+                    //     this.originalSelectionData.height
+                    // );
+/*                    let drawCanvas = this.$root.paint.canvas.drawElement;
                     let drawWidth = drawCanvas.width;
                     let drawHeight = drawCanvas.height;
                     let width = this.$root.paint.state.selection.width;
@@ -482,13 +503,30 @@
                             }
                         }
                     }
+*/                  
+                    let data = this.selectionData.data;
+                    let offset;
+                    for (offset = 0; offset < data.length; offset += 4) {
+                        if (this.isBackgroundColor(data, offset)) {
+                            // Set the A (of RGBA) to 0
+                            data[offset + 3] = 0; 
+                        }
+                    }
                 }
                 else {
-                    this.selectionData = new ImageData(
-                        Uint8ClampedArray.from(this.originalSelectionData.data), 
-                        this.originalSelectionData.width,
-                        this.originalSelectionData.height
-                    );
+                    // this.selectionData = new ImageData(
+                    //     Uint8ClampedArray.from(this.originalSelectionData.data), 
+                    //     this.originalSelectionData.width,
+                    //     this.originalSelectionData.height
+                    // );
+                    let data = this.selectionData.data;
+                    let offset;
+                    for (offset = 0; offset < data.length; offset += 4) {
+                        if (this.isBackgroundColor(data, offset)) {
+                            // Set the A (of RGBA) to 255
+                            data[offset + 3] = 255; 
+                        }
+                    }
                 }
             },
             isBackgroundColor(array, offset) {
