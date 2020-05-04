@@ -1,7 +1,7 @@
 <template>
     <div class="popup-container">
         <div :class="['popup-overlay', visible ? 'popup-visible' : 'popup-invisible']" @click="hide()"></div>
-        <div :class="['popup-tool', visible ? 'popup-visible' : 'popup-invisible']" :style="`top: ${heightOffset}px;`">
+        <div class="popup-tool" :style="`top: ${heightOffset}px;${ visible ? '' : ` left: ${-width}px;`}`" ref="popup-ref">
             <slot />
         </div>
     </div>
@@ -12,7 +12,8 @@
         data() {
             return {
                 visible: false,
-                heightOffset: 0
+                heightOffset: 0,
+                width: 0
             };
         },
         props: {
@@ -26,22 +27,34 @@
                 if (this.name === popupElement.name) {
                     this.show(popupElement.element);
                 }
+                this.$refs['popup-ref'].style.left = '';
             });
             this.$root.$on('hide-popup', (popupName) => {
                 if (this.name === popupName) {
                     this.hide();
                 }
             });
+            let popupRef = this.$refs['popup-ref'];
+            let bounds = popupRef.getBoundingClientRect();
+            this.width = bounds.width;
+            //popupRef.style.left = `${-this.width}px`;
         },
         methods: {
             show(element) {
                 let rect = element.getBoundingClientRect();
                 this.heightOffset = rect.top;
                 this.visible = true;
+                // this.$refs['popup-ref'].style.left = '';
             },
             hide() {
                 this.visible = false;
+                // this.$refs['popup-ref'].style.left = `${-this.width}px`;                
             }
+        // },
+        // filters: {
+        //     style(top) {
+        //         return `top: ${top}px;`;
+        //     }
         }
     };
 </script>
@@ -59,6 +72,8 @@
     div.popup-tool {
         position: fixed;
         border: solid 1px #888;
+        transition: left ease 250ms;
+        z-index: 6;
     }
 
     .popup-invisible {
