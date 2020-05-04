@@ -98,7 +98,7 @@
                     y = this.mouse.initialY;
                 }
                 else if (e.type === 'touchstart') {
-                    // For the line tool, we only use the first touch if there are multiple touches
+                    // For the select tool, we only use the first touch if there are multiple touches
                     this.touch.initialX = e.touches[0].clientX - bounds.left;
                     this.touch.initialY = e.touches[0].clientY - bounds.top;
                     this.touch.finalX = this.touch.initialX;
@@ -205,7 +205,7 @@
                     this.mouse.initialY = e.clientY - bounds.top;
                 }
                 else if (e.type === 'touchstart') {
-                    // For the line tool, we only use the first touch if there are multiple touches
+                    // For the select tool, we only use the first touch if there are multiple touches
                     this.touch.initialX = e.touches[0].clientX - bounds.left;
                     this.touch.initialY = e.touches[0].clientY - bounds.top;
                     this.touch.finalX = this.touch.initialX;
@@ -248,7 +248,6 @@
                     context.fillStyle = backgroundColor;
                     context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
-                // this.setSelectionTransparency();
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
             moveReleaseFunction(e) {
@@ -277,7 +276,6 @@
                     context.fillStyle = backgroundColor;
                     context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
-                // this.setSelectionTransparency();
                 this.invertSelectionBorder(true);
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
@@ -462,48 +460,6 @@
             },
             setSelectionTransparency() {
                 if (this.$root.paint.options.transparentSelection) {
-                    // this.selectionData = new ImageData(
-                    //     Uint8ClampedArray.from(this.originalSelectionData.data), 
-                    //     this.originalSelectionData.width,
-                    //     this.originalSelectionData.height
-                    // );
-/*                    let drawCanvas = this.$root.paint.canvas.drawElement;
-                    let drawWidth = drawCanvas.width;
-                    let drawHeight = drawCanvas.height;
-                    let width = this.$root.paint.state.selection.width;
-                    let height = this.$root.paint.state.selection.height;
-                    let getDrawPointOffset = (x, y) => 4 * (y * drawWidth + x);
-                    let getPointOffset = (x, y) => 4 * (y * width + x);
-                    let selectionX = this.$root.paint.state.selection.x;
-                    let selectionY = this.$root.paint.state.selection.y;
-                    let originalPositionX = this.originalPosition.x;
-                    let originalPositionY = this.originalPosition.y;
-                    let drawData = this.drawingData.data;
-                    let data = this.selectionData.data;
-                    let x, y, drawX, drawY;
-                    let offset, drawOffset;
-                    let inSelectionBounds;
-                    for (y = 0; y < height; y++) {
-                        for (x = 0; x < width; x++) {
-                            drawX = selectionX + x;
-                            drawY = selectionY + y;
-                            if (drawX >= 0 && drawY >= 0 && drawX < drawWidth && drawY < drawHeight) {
-                                offset = getPointOffset(x, y);
-                                inSelectionBounds = 
-                                    drawX >= originalPositionX && 
-                                    drawY >= originalPositionY && 
-                                    drawX < originalPositionX + width && 
-                                    drawY < originalPositionY + height;
-                                if (this.isBackgroundColor(data, offset) && !inSelectionBounds) {
-                                    drawOffset = getDrawPointOffset(drawX, drawY);
-                                    data[offset] = drawData[drawOffset];
-                                    data[offset + 1] = drawData[drawOffset + 1];
-                                    data[offset + 2] = drawData[drawOffset + 2];
-                                }
-                            }
-                        }
-                    }
-*/                  
                     let data = this.selectionData.data;
                     let offset;
                     for (offset = 0; offset < data.length; offset += 4) {
@@ -514,11 +470,6 @@
                     }
                 }
                 else {
-                    // this.selectionData = new ImageData(
-                    //     Uint8ClampedArray.from(this.originalSelectionData.data), 
-                    //     this.originalSelectionData.width,
-                    //     this.originalSelectionData.height
-                    // );
                     let data = this.selectionData.data;
                     let offset;
                     for (offset = 0; offset < data.length; offset += 4) {
