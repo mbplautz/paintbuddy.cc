@@ -42,7 +42,7 @@ import EditTool from './edit-tool.vue';
                     y = this.mouse.initialY;
                 }
                 else if (e.type === 'touchstart') {
-                    // For the line tool, we only use the first touch if there are multiple touches
+                    // For the rectangle tool, we only use the first touch if there are multiple touches
                     this.touch.initialX = e.touches[0].clientX - bounds.left;
                     this.touch.initialY = e.touches[0].clientY - bounds.top;
                     this.touch.finalX = this.touch.initialX;

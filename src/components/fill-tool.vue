@@ -59,9 +59,9 @@
                     y = e.clientY - bounds.top;
                 }
                 else if (e.type === 'touchend') {
-                    // For the line tool, we only use the first touch if there are multiple touches
-                    x = e.touches[0].clientX - bounds.left;
-                    y = e.touches[0].clientY - bounds.top;
+                    // For the fill tool, we only use the first touch if there are multiple touches
+                    x = e.changedTouches[0].clientX - bounds.left;
+                    y = e.changedTouches[0].clientY - bounds.top;
                 }
                 let context = this.$root.paint.canvas.drawContext;
                 // To avoid unwanted side effects, the fill must only apply to the visible viewport, not the entire canvas
