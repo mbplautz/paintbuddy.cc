@@ -46,21 +46,37 @@
         },
         mounted() {
             this.createCanvasSet();
-            window.addEventListener('resize', this.resizeCanvasHandler);
         },
         methods: {
             createCanvasSet() {
                 let canvasDiv = this.getCanvasDiv();
-                let clientRect = canvasDiv.getBoundingClientRect();
+                let maxScreenDimension = Math.max(window.screen.width, window.screen.height);
                 ['undo', 'draw', 'active', 'tool'].forEach(name => {
                     let canvas = document.querySelector(`canvas.${name}-canvas`);
-                    canvas.width = clientRect.width;
-                    canvas.height = clientRect.height;
+                    canvas.width = maxScreenDimension;
+                    canvas.height = maxScreenDimension;
                     this.$root.paint.canvas[`${name}Element`] = canvas;
                     this.$root.paint.canvas[`${name}Context`] = canvas.getContext('2d');
                     this.$root.paint.canvas[`${name}Context`].lineCap = 'round';
                 });
             },
+            // This method is now vestigial and may be used in the future when resizing the canvas is supported again,
+            // but for now, the canvas is just set to be the size of the screen as a square. This has a few implications:
+            //
+            // - Assuming the screen resolution never changes, the window can grow and shrink to whatever size and the 
+            // canvas never needs to be reevaluated
+            // - Also assuming the screen resolution never changes, the orientation can change (like on a tablet or a 
+            // touchscreen device) and there is no need for the canvas to grow
+            // - The maximum betwene screen width and screen height is taken and set as both the width and height for the
+            // canvas. This allows the screen orientation to be able to change without reevaluating the canvas
+            // - If the screen resolution does change (i.e. grow), the canvas will not grow with it (since there is no
+            // resize handler)
+            // - Resizing the canvas has an impact on the undo/redo change set queue, as those buffers are based on offsets
+            // calculated by the current canvas size. If the canvas size grows, each of those offsets must be recalculated.
+            // - Putting those recalculations within a window resize handler could be very costly. Though there are remedies
+            // for this issue, preventing resize of the canvas eliminates complexity for the time being
+            // - Getting the pixel data before resize and redrawing after resize did not prove to be 100% effective. There
+            // would often be a section clipped.
             resizeCanvasHandler() {
                 let canvasDiv = this.getCanvasDiv();
                 let clientRect = canvasDiv.getBoundingClientRect();
