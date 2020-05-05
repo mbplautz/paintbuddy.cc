@@ -59,7 +59,6 @@
                 selectionData: null,
                 originalSelectionData: null,
                 pasted: false,
-                drawingData: null,
                 pastePoint: Object.assign({}, pastePointStart)
             }
         },
@@ -82,8 +81,12 @@
             childDeselect() {
                 console.log('Select tool deselect');
                 this.clearSelection();
-                let undoContext = this.$root.paint.canvas.undoContext;
-                undoContext.fillStyle = this.$root.paint.options.color;
+                let context = this.$root.paint.canvas.undoContext;
+                context.fillStyle = this.$root.paint.options.color;
+                context = this.$root.paint.canvas.activeContext;
+                context.fillStyle = this.$root.paint.options.color;
+                let canvas = this.$root.paint.canvas.activeElement;
+                context.clearRect(0, 0, canvas.width, canvas.height);
             },
             touchFunction(e) {
                 this.clearSelection();
@@ -191,7 +194,6 @@
                 let drawCanvas = this.$root.paint.canvas.drawElement;
                 this.originalSelectionData = drawContext.getImageData(initialX, initialY, width, height);
                 this.selectionData = drawContext.getImageData(initialX, initialY, width, height);
-                this.drawingData = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
                 this.setSelectionTransparency();
                 this.invertSelectionBorder(true);
                 context.putImageData(this.selectionData, initialX, initialY);
@@ -245,8 +247,9 @@
                 let context = this.$root.paint.canvas.toolContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 if (!this.pasted) {
-                    context.fillStyle = backgroundColor;
-                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                    let activeContext = this.$root.paint.canvas.activeContext;
+                    activeContext.fillStyle = backgroundColor;
+                    activeContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
@@ -273,8 +276,9 @@
                 let context = this.$root.paint.canvas.toolContext;
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 if (!this.pasted) {
-                    context.fillStyle = backgroundColor;
-                    context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                    let activeContext = this.$root.paint.canvas.activeContext;
+                    activeContext.fillStyle = backgroundColor;
+                    activeContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                 }
                 this.invertSelectionBorder(true);
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
@@ -294,8 +298,9 @@
                     let context = this.$root.paint.canvas.toolContext;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     if (!this.pasted) {
-                        context.fillStyle = backgroundColor;
-                        context.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                        let activeContext = this.$root.paint.canvas.activeContext;
+                        activeContext.fillStyle = backgroundColor;
+                        activeContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                     }
                     this.setSelectionTransparency();
                     context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
@@ -312,12 +317,16 @@
                         undoContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
                     }
                     this.setSelectionTransparency();
+                    this.compensateTransparentOverlap();
                     undoContext.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
                     this.$root.paint.state.selection = null;
                     let canvas = this.$root.paint.canvas.toolElement;
                     let context = this.$root.paint.canvas.toolContext;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     this.commitDrawing();
+                    context = this.$root.paint.canvas.activeContext;
+                    canvas = this.$root.paint.canvas.activeElement;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
                 }
             },
             copySelection() {
@@ -446,10 +455,19 @@
                                 data[offset + 3] = 255; // Keep the border opaque
                             }
                             else {
-                                data[offset] = originalData[offset];
-                                data[offset + 1] = originalData[offset + 1];
-                                data[offset + 2] = originalData[offset + 2];
-                                data[offset + 3] = originalData[offset + 3];
+                                // This code attempts to prevent a bug where the border shows up as a white dotted line against the
+                                // background during drag (the border should be invisible) while transparent selection is enabled.
+                                // This code introduces a new bug where the border persists after the selection has been cleared
+                                // in the area that overlaps the original selection position and the final selection position.
+                                // if (this.$root.paint.options.transparentSelection && this.isBackgroundColor(originalData, offset)) {
+                                //     data[offset + 3] = 0;
+                                // }
+                                // else {
+                                    data[offset] = originalData[offset];
+                                    data[offset + 1] = originalData[offset + 1];
+                                    data[offset + 2] = originalData[offset + 2];
+                                    data[offset + 3] = originalData[offset + 3];
+                                // }
                             }
                         }
                         invert = !invert;
@@ -479,6 +497,68 @@
                         }
                     }
                 }
+            },
+            compensateTransparentOverlap() {
+                // I tried a few implementatons of select, drag, and release with transparent selection before I got to
+                // the solution that is currently implemented. The current solution just sets the alpha to 0 for all 
+                // pixels that are deemed a background color. This leaves one bug, which I will describe. During an 
+                // original selection move, there should be a hole left behind where the selection was grabbed from. To
+                // accomplish this, I draw a rectangle that is filled with the background color. Only, once I call put-
+                // ImageData, any pixel that is transparent that overlaps this white rectangle also becomes transparent,
+                // allowing visibility to the draw canvas underneath. Therefore, I have to compensate for this two ways:
+                // 
+                // - Draw a background colored rectangle on the active canvas instead of the tool canvas
+                // - Call this method when the selection is cleared and committed to the undo and draw canvases. This
+                // solution checks for transparency selected and overlap between the hole and the current selection
+                // position. If there is overlap and transparency, each background pixel has its opacity set back to 
+                // opaque (255 Alpha) instead of transparent (0 Alpha).
+                if (this.$root.paint.options.transparentSelection) {
+                    if (this.isSelectionOverlapsOriginal()) {
+                        // Brute force method for now to determine the overlap section
+                        let x, y, offset, drawX, drawY;
+                        let selectionX = this.$root.paint.state.selection.x;
+                        let selectionY = this.$root.paint.state.selection.y;
+                        let width = this.$root.paint.state.selection.width;
+                        let height = this.$root.paint.state.selection.height;
+                        let data = this.selectionData.data;
+                        for (y = 0; y < height; y++) {
+                            for (x = 0; x < width; x++) {
+                                drawX = selectionX + x;
+                                drawY = selectionY + y;
+                                if (
+                                    drawX >= this.originalPosition.x && 
+                                    drawY >= this.originalPosition.y &&
+                                    drawX < this.originalPosition.x + this.originalPosition.width &&
+                                    drawY < this.originalPosition.y + this.originalPosition.height
+                                ) {
+                                    offset = 4 * (y * width + x);
+                                    // Ensure opacity by setting Alpha to 255
+                                    data[offset + 3] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            isSelectionOverlapsOriginal() {
+                let l1 = {
+                    x: this.$root.paint.state.selection.x,
+                    y: this.$root.paint.state.selection.y
+                };
+                let r1 = {
+                    x: l1.x + this.$root.paint.state.selection.width - 1,
+                    y: l1.y + this.$root.paint.state.selection.height - 1
+                };
+                let l2 = {
+                    x: this.originalPosition.x,
+                    y: this.originalPosition.y
+                };
+                let r2 = {
+                    x: l2.x + this.originalPosition.width - 1,
+                    y: l2.y + this.originalPosition.height - 1
+                };
+
+                return (l1.x < r2.x && l2.x < r1.x) && (l1.y < r2.y && l2.y < r1.y);
             },
             isBackgroundColor(array, offset) {
                 return array[offset] === 255 && array[offset + 1] === 255 && array[offset + 2] === 255;
