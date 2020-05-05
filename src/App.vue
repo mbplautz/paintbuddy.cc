@@ -2,12 +2,14 @@
     <div id="app">
         <paint-toolbar />
         <paint-canvas />
+        <paint-menu />
     </div>
 </template>
 
 <script>
 import PaintToolbar from './components/paint-toolbar.vue';
 import PaintCanvas from './components/paint-canvas.vue';
+import PaintMenu from './components/paint-menu.vue';
 
 import UndoCalc from './mixins/undo-calc.vue';
 
@@ -281,7 +283,8 @@ export default {
     },
     components: {
         PaintToolbar,
-        PaintCanvas
+        PaintCanvas,
+        PaintMenu
     }
 }
 </script>
