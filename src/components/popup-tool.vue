@@ -1,7 +1,7 @@
 <template>
-    <div class="popup-container">
+    <div :class="['popup-container', name]">
         <div :class="['popup-overlay', visible ? 'popup-visible' : 'popup-invisible']" @click="hide()"></div>
-        <div class="popup-tool" :style="`top: ${heightOffset}px;${ visible ? '' : ` left: ${-width}px;`}`" ref="popup-ref">
+        <div class="popup-tool" :style="`top: ${heightOffset}px;${ visible ? '' : ` left: ${-width}px;`}${ initiallyHidden ? ' z-index: -5;' : ''}`" ref="popup-ref">
             <slot />
         </div>
     </div>
@@ -13,7 +13,8 @@
             return {
                 visible: false,
                 heightOffset: 0,
-                width: 0
+                width: 0,
+                initiallyHidden: true
             };
         },
         props: {
@@ -27,7 +28,6 @@
                 if (this.name === popupElement.name) {
                     this.show(popupElement.element);
                 }
-                this.$refs['popup-ref'].style.left = '';
             });
             this.$root.$on('hide-popup', (popupName) => {
                 if (this.name === popupName) {
@@ -37,29 +37,24 @@
             let popupRef = this.$refs['popup-ref'];
             let bounds = popupRef.getBoundingClientRect();
             this.width = bounds.width;
-            //popupRef.style.left = `${-this.width}px`;
+            this.$root.$on('unhide-popups', () => this.initiallyHidden = false);
         },
         methods: {
             show(element) {
                 let rect = element.getBoundingClientRect();
                 this.heightOffset = rect.top;
                 this.visible = true;
-                // this.$refs['popup-ref'].style.left = '';
+                document.querySelector(`div.popup-container.${this.name} div.popup-tool`).style.left = '';
             },
             hide() {
                 this.visible = false;
-                // this.$refs['popup-ref'].style.left = `${-this.width}px`;                
+                document.querySelector(`div.popup-container.${this.name} div.popup-tool`).style.left = `${-this.width}px`;            
             }
-        // },
-        // filters: {
-        //     style(top) {
-        //         return `top: ${top}px;`;
-        //     }
         }
     };
 </script>
 
-<style>
+<style scoped>
     div.popup-overlay {
         width: 100%;
         height: 100%;

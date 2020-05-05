@@ -219,6 +219,8 @@ export default {
         context.beginPath();
         context.rect(0, 0, canvas.width, canvas.height);
         context.fill();
+        // Prevent a quick visible slide of all the popups upon initial page load
+        setTimeout(() => this.$root.$emit('unhide-popups'), 250);
         // Set the defaults
         this.$root.paint.state.setColor(this.$root.paint.options.color);
         this.$root.paint.state.setLineWidth(this.$root.paint.options.lineWidth);
