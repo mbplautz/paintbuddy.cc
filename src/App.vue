@@ -9,12 +9,15 @@
 import PaintToolbar from './components/paint-toolbar.vue';
 import PaintCanvas from './components/paint-canvas.vue';
 
+import UndoCalc from './mixins/undo-calc.vue';
+
 import Shape from './module/shape';
 
 export default {
     data() {
         return {};
     },
+    mixins: [UndoCalc],
     created() {
         this.$root.paint = {
             function: {
@@ -145,7 +148,8 @@ export default {
                             });
                         });
                         context.putImageData(imageData, 0, 0);
-                        this.$root.paint.state._redoQueue.push(redoMap);
+                        let compressedRedoMap = this.compressUndoMap(redoMap);
+                        this.$root.paint.state._redoQueue.push(compressedRedoMap);
                         this.$root.paint.state.canRedo = true;
                         this.$root.paint.state.dirty = this.$root.paint.state._undoQueue.length > 0;
                     }
@@ -158,7 +162,7 @@ export default {
                         let redoMap = this.$root.paint.state._redoQueue.pop();
                         let undoMap = {};
                         let data = imageData.data;
-                        let r, g, b, a, redoR, redoG, redoB, redoA, val;
+                        let r, g, b, a, redoR, redoG, redoB, redoA, val, upperOffset;
                         // We can use fancy consolidated syntax since this operation is used less frequently
                         Object.keys(redoMap).forEach(key => {
                             a = key & 0xFF;
@@ -175,23 +179,35 @@ export default {
                             }
                             let offsetArray = redoMap[key];
                             offsetArray.forEach(offset => {
-                                redoR = data[offset];
-                                redoG = data[offset + 1];
-                                redoB = data[offset + 2];
-                                redoA = data[offset + 3];
-                                data[offset] = r;
-                                data[offset + 1] = g;
-                                data[offset + 2] = b;
-                                data[offset + 3] = a;
-                                val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
-                                if (!undoMap[val]) {
-                                    undoMap[val] = [];
+                                if (Array.isArray(offset)) { // If this is a range ...
+                                    upperOffset = offset[1]; // ... then determine the boundaries
+                                    offset = offset[0];
                                 }
-                                undoMap[val].push(offset);
+                                else {
+                                    upperOffset = offset;
+                                }
+                                // Either process the one offset or the whole range
+                                do {
+                                    redoR = data[offset];
+                                    redoG = data[offset + 1];
+                                    redoB = data[offset + 2];
+                                    redoA = data[offset + 3];
+                                    data[offset] = r;
+                                    data[offset + 1] = g;
+                                    data[offset + 2] = b;
+                                    data[offset + 3] = a;
+                                    val = redoA | (redoB << 8) | (redoG << 16) | (redoR << 24);
+                                    if (!undoMap[val]) {
+                                        undoMap[val] = [];
+                                    }
+                                    undoMap[val].push(offset);
+                                    offset += 4;
+                                } while (offset <= upperOffset);
                             });
                         });
                         context.putImageData(imageData, 0, 0);
-                        this.$root.paint.state._undoQueue.push(undoMap);
+                        let compressedUndoMap = this.compressUndoMap(undoMap);
+                        this.$root.paint.state._undoQueue.push(compressedUndoMap);
                         this.$root.paint.state.dirty = true;
                         this.$root.paint.state.canRedo = this.$root.paint.state._redoQueue.length > 0;
                     }
