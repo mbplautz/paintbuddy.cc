@@ -15,7 +15,8 @@
                 popupVisible: false,
                 heightOffset: 0,
                 width: 0,
-                initiallyHidden: true
+                initiallyHidden: true,
+                attachElement: null
             };
         },
         props: {
@@ -36,13 +37,13 @@
                 }
             });
             this.setLeft();
-            window.addEventListener('resize', this.setLeft);
+            window.addEventListener('resize', () => { this.setLeft(); this.setTop(); });
             this.$root.$on('unhide-popups', () => this.initiallyHidden = false);
         },
         methods: {
             show(element) {
-                let rect = element.getBoundingClientRect();
-                this.heightOffset = rect.top;
+                this.attachElement = element;
+                this.setTop();
                 this.visible = true;
                 document.querySelector(`div.popup-container.${this.name} div.popup-menu`).style.left = '';
                 // We have very specific criteria to meet, which is why we do what is below
@@ -67,6 +68,12 @@
                 let popupRef = this.$refs['popup-ref'];
                 let bounds = popupRef.getBoundingClientRect();
                 this.width = bounds.width;
+            },
+            setTop() {
+                if (this.attachElement) {
+                    let rect = this.attachElement.getBoundingClientRect();
+                    this.heightOffset = rect.top;
+                }
             }
         }
     };
