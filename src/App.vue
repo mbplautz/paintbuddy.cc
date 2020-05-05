@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import PaintToolbar from './components/paint-toolbar.vue';
-import PaintCanvas from './components/paint-canvas.vue';
-import PaintMenu from './components/paint-menu.vue';
+import PaintToolbar from './components/containers/paint-toolbar.vue';
+import PaintCanvas from './components/containers/paint-canvas.vue';
+import PaintMenu from './components/containers/paint-menu.vue';
 
 import UndoCalc from './mixins/undo-calc.vue';
 
