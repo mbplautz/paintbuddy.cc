@@ -19,12 +19,15 @@
         <filled-polygon-tool />
         <transparent-selection-tool />
 
+        <main-menu />
         <copy-menu />
         <color-menu />
         <shape-menu />
         <line-width-menu />
         <filled-polygon-menu />
         <transparent-selection-menu />
+
+        <confirm-dialog />
     </div>
 </template>
 
@@ -47,12 +50,14 @@ import LineWidthTool from './line-width-tool.vue';
 import FilledPolygonTool from './filled-polygon-tool.vue';
 import TransparentSelectionTool from './transparent-selection-tool.vue';
 
+import MainMenu from './main-menu.vue';
 import CopyMenu from './copy-menu.vue';
 import ColorMenu from './color-menu.vue';
 import ShapeMenu from './shape-menu.vue';
 import LineWidthMenu from './line-width-menu.vue';
 import FilledPolygonMenu from './filled-polygon-menu.vue';
 import TransparentSelectionMenu from './transparent-selection-menu.vue';
+import ConfirmDialog from './confirm-dialog.vue';
 
     export default {
         data() {
@@ -76,12 +81,14 @@ import TransparentSelectionMenu from './transparent-selection-menu.vue';
             LineWidthTool,
             FilledPolygonTool,
             TransparentSelectionTool,
+            MainMenu,
             CopyMenu,
             ColorMenu,
             ShapeMenu,
             LineWidthMenu,
             FilledPolygonMenu,
-            TransparentSelectionMenu
+            TransparentSelectionMenu,
+            ConfirmDialog
         }
     }
 </script>

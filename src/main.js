@@ -23,7 +23,12 @@ new Vue({
       state: {
         dirty: false,
         canRedo: false,
-        selection: null
+        selection: null,
+        confirm: {
+          confirmDialog: false,
+          confirmAction: '',
+          message: ''
+        }
       },
       refs: []
     }

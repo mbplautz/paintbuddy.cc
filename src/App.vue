@@ -196,6 +196,25 @@ export default {
                         this.$root.paint.state.canRedo = this.$root.paint.state._redoQueue.length > 0;
                     }
                 },
+                resetState: () => {
+                    // All values should match what is set below to reset state
+                    let state = this.$root.paint.state;
+                    state.drawing = false;
+                    state.dirty = false;
+                    state.canRedo = false;
+                    state.selection = null;
+                    state.copySelection = null;
+                    state._undoQueue.length = 0;
+                    state._redoQueue.length = 0;
+                    state._colorTo = null;
+                    state._lineWidthTo = null;
+                    state._touchFunctionsTo = null;
+                },
+                confirm: {
+                    confirmDialog: false,
+                    confirmAction: '',
+                    message: ''
+                },
                 drawing: false,
                 dirty: false,
                 canRedo: false,
