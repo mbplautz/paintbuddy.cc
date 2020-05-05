@@ -35,9 +35,8 @@
                     this.hide();
                 }
             });
-            let popupRef = this.$refs['popup-ref'];
-            let bounds = popupRef.getBoundingClientRect();
-            this.width = bounds.width;
+            this.setLeft();
+            window.addEventListener('resize', this.setLeft);
             this.$root.$on('unhide-popups', () => this.initiallyHidden = false);
         },
         methods: {
@@ -63,6 +62,11 @@
                 this.visible = false;
                 this.popupVisible = false;
                 document.querySelector(`div.popup-container.${this.name} div.popup-menu`).style.left = `${-this.width}px`;            
+            },
+            setLeft() {
+                let popupRef = this.$refs['popup-ref'];
+                let bounds = popupRef.getBoundingClientRect();
+                this.width = bounds.width;
             }
         }
     };
