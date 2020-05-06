@@ -306,7 +306,7 @@
                     context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
                 }
             },
-            clearSelection() {
+            clearSelection(semaphore) {
                 if (this.$root.paint.state.selection) {
                     this.invertSelectionBorder(false);
                     let undoCanvas = this.$root.paint.canvas.undoElement;
@@ -328,6 +328,7 @@
                     canvas = this.$root.paint.canvas.activeElement;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                 }
+                this.$root.$emit('selection-cleared', semaphore);
             },
             copySelection() {
                 if (this.$root.paint.state.selection) {
