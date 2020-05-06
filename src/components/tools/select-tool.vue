@@ -561,8 +561,10 @@
 
                 return (l1.x < r2.x && l2.x < r1.x) && (l1.y < r2.y && l2.y < r1.y);
             },
+            // This is a threshold way to evaluate white as a background. This could be replaced with the toleranceEqual
+            // method used by flood fill
             isBackgroundColor(array, offset) {
-                return array[offset] === 255 && array[offset + 1] === 255 && array[offset + 2] === 255;
+                return (array[offset] + array[offset + 1] + array[offset + 2] >= 750); 
             },
             buildDashPattern() {
                 let context = this.$root.paint.canvas.toolContext;
