@@ -26,7 +26,7 @@
                         message: ['There are unsaved changes to this drawing.', 'Are you sure you want to discard the drawing?'],
                         confirmAction: 'action-open' 
                     });
-                    this.$root.$emit('show-confirm-dialog');
+                    this.$root.$emit('show-dialog', 'confirm-dialog');
                 }
                 else {
                     this.open();
