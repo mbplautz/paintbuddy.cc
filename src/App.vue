@@ -94,6 +94,7 @@ export default {
                 },
                 saveUndoMap: (undoMap) => {
                     this.$root.paint.state.dirty = true;
+                    this.$root.paint.state.dirtySave = true;
                     this.$root.paint.state.canRedo = false;
                     this.$root.paint.state._redoQueue.length = 0;
                     this.$root.paint.state._undoQueue.push(undoMap);
@@ -219,9 +220,9 @@ export default {
                     let state = this.$root.paint.state;
                     state.drawing = false;
                     state.dirty = false;
+                    state.dirtySave = false;
                     state.canRedo = false;
                     state.selection = null;
-                    state.copySelection = null;
                     state._undoQueue.length = 0;
                     state._redoQueue.length = 0;
                     state._colorTo = null;
@@ -235,6 +236,7 @@ export default {
                 },
                 drawing: false,
                 dirty: false,
+                dirtySave: false,
                 canRedo: false,
                 selection: null,
                 copySelection: null,

@@ -20,7 +20,7 @@
         methods: {
             click() {
                 this.$root.$emit('hide-popup', 'main-menu');
-                if (this.$root.paint.state.dirty) {
+                if (this.$root.paint.state.dirtySave) {
                     Object.assign(this.$root.paint.state.confirm, {
                         confirmDialog: true,
                         message: ['There are unsaved changes to this drawing.', 'Are you sure you want to discard the drawing?'],

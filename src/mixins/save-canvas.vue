@@ -72,6 +72,7 @@
                 anchor.download = this.filename;
                 // Initiate the browser download of the file
                 anchor.click();
+                this.$root.paint.state.dirtySave = false;
 
                 // Restore the undo canvas
                 undoCanvas.width = restoreWidth;
