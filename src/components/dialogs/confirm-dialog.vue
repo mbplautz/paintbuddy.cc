@@ -1,6 +1,6 @@
 <template>
     <dialog-box name="confirm-dialog">
-        <div class="confirm-dialog-window">
+        <div class="confirm-dialog-window" @click="preventDefault($event)">
             <div class="message-panel" v-if="!$root.paint.state.confirm.template">
                 <p v-for="item in ordinate($root.paint.state.confirm.message)" :key="item.index">
                     {{item.element}}
@@ -45,12 +45,12 @@
             },
             hide() {
                 this.$root.$emit('hide-dialog', 'confirm-dialog');
-                // Reset the confirm option and template to prevent it from accidentally showing up on future dialogs
-                this.$root.paint.state.confirm.confirmOption = null;
-                this.$root.paint.state.confirm.template = null;
             },
             ordinate(array) {
                 return (Array.isArray(array) ? array : [array]).map((element, index) => ({ element, index }));
+            },
+            preventDefault(e) {
+                e.stopPropagation();
             }
         }
     };

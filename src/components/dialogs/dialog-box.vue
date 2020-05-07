@@ -40,6 +40,11 @@
             },
             hide() {
                 this.visible = false;
+                // Reset the confirm option and template to prevent it from accidentally showing up on future dialogs
+                // Truthfully, this belongs in the confirm dialog box code, but it is here because this will be
+                // guaranteed to be called, even when the overlay is clicked on. Maybe a closed event in the future?
+                this.$root.paint.state.confirm.confirmOption = null;
+                this.$root.paint.state.confirm.template = null;
             },
         }
     };
