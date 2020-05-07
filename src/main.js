@@ -9,5 +9,30 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  // All app-level data that needs to be bound must be declared here first
+  data: () => ({
+    paint: {
+      options: {
+        color: '',
+        lineWidth: 0,
+        filledPolygon: false,
+        transparentSelection: false,
+        selectedShape: ''
+      },
+      state: {
+        dirty: false,
+        canRedo: false,
+        selection: null,
+        confirm: {
+          confirmDialog: false,
+          confirmAction: '',
+          confirmOption: null,
+          template: null,
+          message: ''
+        }
+      },
+      refs: []
+    }
+  })
 });

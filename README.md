@@ -18,7 +18,17 @@ OK, so just so you know, I wrote this app every night for a while as a side gig.
 
 4. Navigate into the `paintbuddy.cc` directory
 5. Copy and overwrite (rsync) all of the downloaded source from the other directory to this current directory
-6. Run
+6. Navigate into the `build` directory
+7. Update the `webpack.base.conf.js` file, and in the `module` section (it is a JS array), append this as the last element:
+
+```javascript
+{
+  test: /\.worker\.js$/,
+  use: { loader: 'worker-loader' }
+}
+```
+8. Navigate back down to the `paintbuddy.cc` directory
+9. Run
 
     `npm install`
 
