@@ -483,3 +483,17 @@ div.canvas {
 div.toolbar-button.selected-item, div.toolbar-button div.selected-option {
     background-color: #cee9fe;
 }
+
+@media only print {
+    div.toolbar, div.menu, div.paint-color-light, div.paint-cover-heavy, div.selection, div.popup-container, div.dialog-box-container, canvas {
+        display: none;
+    }
+
+    div.canvas-child {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+}

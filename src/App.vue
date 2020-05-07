@@ -285,6 +285,24 @@ export default {
                 );
             }
         });
+        // Print Support
+        window.addEventListener('beforeprint', () => {
+            let canvasDiv = document.querySelector('div.canvas div.canvas-child');
+            let bounds = canvasDiv.getBoundingClientRect();
+            let img = document.createElement('img');
+            img.id = 'print-img';
+            let width = bounds.width > 0 ? bounds.width - 1 : 0;
+            let height = bounds.height > 0 ? bounds.height - 1 : 0;
+            img.width = width;
+            img.height = height;
+            img.src = this.$root.paint.canvas.drawElement.toDataURL();
+            canvasDiv.appendChild(img);
+        });
+        window.addEventListener('afterprint', () => {
+            let canvasDiv = document.querySelector('div.canvas div.canvas-child');
+            let img = document.getElementById('print-img');
+            canvasDiv.removeChild(img);            
+        })
     },
     components: {
         PaintToolbar,
