@@ -25,6 +25,7 @@ new Vue({
         canRedo: false,
         selection: null,
         confirm: {
+          confirmOption: null,
           confirmDialog: false,
           confirmAction: '',
           message: ''

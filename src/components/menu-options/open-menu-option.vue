@@ -38,9 +38,11 @@
             processFile() {
                 if (window.File && window.FileReader) {
                     // Taken from SO answer https://stackoverflow.com/a/13939150/1733377
+                    let file, fr, img;
                     const createImage = () => {
                         img = new Image();
                         img.onload = imageLoaded;
+                        img.onerror = loadError; // Capture invalid image file selections
                         img.src = fr.result;
                     };
                     const imageLoaded = () => {
@@ -48,11 +50,24 @@
                         let context = this.$root.paint.canvas.drawContext;
                         context.drawImage(img, 0, 0);
                     };
-                    let file = this.fileInputElement.files[0];
-                    let fr = new FileReader();
-                    let img;
-                    fr.onload = createImage;   // onload fires after reading is complete
-                    fr.readAsDataURL(file);    // begin reading
+                    const loadError = () => {
+                        this.$root.paint.state.confirm.confirmDialog = false;
+                        this.$root.paint.state.confirm.confirmAction = null;
+                        this.$root.paint.state.confirm.confirmOption = 'OK';
+                        this.$root.paint.state.confirm.message = [
+                            "Oops! This file can't be opened.",
+                            'Either this file is not an image or Paintbuddy.cc does not know how to open it.',
+                            'Please try a different file.'
+                        ];
+                        this.$root.$emit('show-dialog', 'confirm-dialog');
+                    };
+                    file = this.fileInputElement.files[0];
+                    if (file) { // Prevent processing when cancel was hit
+                        fr = new FileReader();
+                        img;
+                        fr.onload = createImage;   // onload fires after reading is complete
+                        fr.readAsDataURL(file);    // begin reading
+                    }
                 }
                 else {
                     this.$root.paint.state.confirm.confirmDialog = false;

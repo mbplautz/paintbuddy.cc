@@ -9,16 +9,16 @@
             <div class="button-panel">
                 <div class="button-span">
                     <div class="button cancel-button" v-if="$root.paint.state.confirm.confirmDialog" @click="hide()">
-                        <span>
+                        <a>
                             <i class="fas fa-times-circle"></i>
                             Cancel
-                        </span>
+                        </a>
                     </div>
                     <div class="button confirm-button" @click="($root.paint.state.confirm.confirmDialog ? action : hide)()">
-                        <span>
+                        <a>
                             <i class="fas fa-check-circle"></i>
-                            Confrm
-                        </span>
+                            {{$root.paint.state.confirm.confirmOption ? $root.paint.state.confirm.confirmOption : 'Confirm'}}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -42,6 +42,8 @@
             },
             hide() {
                 this.$root.$emit('hide-dialog', 'confirm-dialog');
+                // Reset the confirm option to prevent it from accidentally showing up on future dialogs
+                this.$root.paint.state.confirm.confirmOption = null;
             },
             ordinate(array) {
                 return (Array.isArray(array) ? array : [array]).map((element, index) => ({ element, index }));
@@ -87,21 +89,21 @@
         padding: 5px 20px;
     }
 
-    div.confirm-dialog-window div.button-panel div.button-span div.button span {
+    div.confirm-dialog-window div.button-panel div.button-span div.button a {
         display: flex;
         align-items: center;
     }
 
-    div.confirm-dialog-window div.button-panel div.button-span div.button span i {
+    div.confirm-dialog-window div.button-panel div.button-span div.button a i {
         font-size: 36px;
         padding-right: 10px;
     }
 
-    div.confirm-dialog-window div.button-panel div.button-span div.cancel-button span i {
+    div.confirm-dialog-window div.button-panel div.button-span div.cancel-button a i {
         color: #ff2d19;
     }
 
-    div.confirm-dialog-window div.button-panel div.button-span div.confirm-button span i {
+    div.confirm-dialog-window div.button-panel div.button-span div.confirm-button a i {
         color: #258c1c;
     }    
 </style>

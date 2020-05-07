@@ -232,6 +232,7 @@ export default {
                 confirm: {
                     confirmDialog: false,
                     confirmAction: '',
+                    confirmOption: null,
                     message: ''
                 },
                 drawing: false,
