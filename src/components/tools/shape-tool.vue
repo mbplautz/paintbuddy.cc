@@ -41,7 +41,7 @@ import Shape from '../../module/shape';
         extends: EditButton,
         methods: {
             select() {
-                console.log('Shape Tool clicked');
+                console.debug('Shape Tool clicked');
                 let name = 'shape-menu';
                 let element = this.$refs['toolbar-button'];
                 this.$root.$emit('show-popup', {

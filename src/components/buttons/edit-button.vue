@@ -31,7 +31,7 @@
             deselect(buttonGroup) {
                 if (buttonGroup === this.buttonGroup) {
                      this.selected = false;
-                     console.log(`${this.name} has been deselected`);
+                     console.debug(`${this.name} has been deselected`);
                     if (this.childDeselect) {
                         this.childDeselect();
                     }

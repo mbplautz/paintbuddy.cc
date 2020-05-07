@@ -30,7 +30,7 @@
         extends: EditButton,
         methods: {
             select() {
-                console.log('Eraser Tool clicked');
+                console.debug('Eraser Tool clicked');
             },
             touchFunction(e) {
                 this.contextRestoreTimeoutArray.forEach(timeout => clearTimeout(timeout));

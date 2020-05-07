@@ -24,10 +24,10 @@ import EditButton from '../buttons/edit-button.vue';
         extends: EditButton,
         methods: {
             select() {
-                console.log('Brush Tool clicked');
+                console.debug('Brush Tool clicked');
             },
             touchFunction(e) {
-                console.log(e);
+                console.debug(e);
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousedown') {
@@ -58,7 +58,7 @@ import EditButton from '../buttons/edit-button.vue';
                 }
             },
             dragFunction(e) {
-                console.log(e);
+                console.debug(e);
                 let canvas = this.$root.paint.canvas.activeElement;
                 let bounds = canvas.getBoundingClientRect();
                 if (e.type === 'mousemove') {
@@ -87,7 +87,7 @@ import EditButton from '../buttons/edit-button.vue';
                 }
             },
             releaseFunction(e) {
-                console.log(e);
+                console.debug(e);
                 // For the brush tool, copy what was on the active canvas to the undo canvas
                 let canvas = this.$root.paint.canvas.activeElement;
                 let activeContext = this.$root.paint.canvas.activeContext;

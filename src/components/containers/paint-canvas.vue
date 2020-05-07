@@ -83,7 +83,7 @@
                 let drawCanvas = this.$root.paint.canvas.drawElement;
                 // Only resize if it has grown - we never want to shrink!
                 if (clientRect.width > drawCanvas.width || clientRect.height > drawCanvas.height) {
-                    console.log('resized');
+                    console.debug('resized');
                     let drawContext = this.$root.paint.canvas.drawContext;
                     let imageData = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
                     ['undo', 'draw', 'active', 'tool'].forEach(name => {

@@ -42,7 +42,7 @@
         extends: EditButton,
         methods: {
             select() {
-                console.log('Fill Tool clicked');
+                console.debug('Fill Tool clicked');
             },
             touchFunction(e) {
 

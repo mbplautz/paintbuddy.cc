@@ -11,7 +11,7 @@ import ActionButton from '../buttons/action-button.vue';
         extends: ActionButton,
         methods: {
             action() {
-                console.log('Undo clicked');
+                console.debug('Undo clicked');
                 this.$root.$emit('clear-selection');
                 if (this.$root.paint.state.dirty) {
                     this.$root.paint.state.undo();

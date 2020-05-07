@@ -77,10 +77,10 @@
         },
         methods: {
             select() {
-                console.log('Select Tool clicked');
+                console.debug('Select Tool clicked');
             },
             childDeselect() {
-                console.log('Select tool deselect');
+                console.debug('Select tool deselect');
                 this.clearSelection();
                 let context = this.$root.paint.canvas.undoContext;
                 context.fillStyle = this.$root.paint.options.color;

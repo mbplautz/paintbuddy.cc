@@ -11,7 +11,7 @@ import ActionButton from '../buttons/action-button.vue';
         extends: ActionButton,
         methods: {
             action() {
-                console.log('Redo clicked');
+                console.debug('Redo clicked');
                 this.$root.$emit('clear-selection');
                 this.$root.paint.state.redo();
             },

@@ -29,7 +29,7 @@ import EditButton from '../buttons/edit-button.vue';
         extends: EditButton,
         methods: {
             select() {
-                console.log('Ellipse Tool clicked');
+                console.debug('Ellipse Tool clicked');
             },
             touchFunction(e) {
                 let canvas = this.$root.paint.canvas.activeElement;
