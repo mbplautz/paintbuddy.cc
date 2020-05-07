@@ -47,6 +47,7 @@ export default {
                 undoElement: null,
                 undoContext: null,
             },
+            tool: {},
             state: {
                 setColor: (color) => {
                     if (!this.$root.paint.state.drawing) {

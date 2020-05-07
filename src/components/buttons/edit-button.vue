@@ -13,6 +13,7 @@
         mixins: [UndoCalc],
         mounted() {
             this.$root.$on('deselect', this.deselect);
+            this.$root.paint.tool[`${this.name}Select`] = this.click;
         },
         methods: {
             click() {
