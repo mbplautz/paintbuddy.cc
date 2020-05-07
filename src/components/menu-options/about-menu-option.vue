@@ -6,7 +6,7 @@
             return {
                 icon: 'far fa-comment-alt',
                 name: 'about',
-                optionName: 'About Paintbuddy.cc'
+                optionName: 'About PaintBuddy.cc'
             }
         },
         extends: MenuOption,

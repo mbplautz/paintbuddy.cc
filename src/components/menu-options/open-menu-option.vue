@@ -56,7 +56,7 @@
                         this.$root.paint.state.confirm.confirmOption = 'OK';
                         this.$root.paint.state.confirm.message = [
                             "Oops! This file can't be opened.",
-                            'Either this file is not an image or Paintbuddy.cc does not know how to open it.',
+                            'Either this file is not an image or PaintBuddy.cc does not know how to open it.',
                             'Please try a different file.'
                         ];
                         this.$root.$emit('show-dialog', 'confirm-dialog');
