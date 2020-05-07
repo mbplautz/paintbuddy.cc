@@ -58,6 +58,7 @@
                 dashPattern: null,
                 selectionData: null,
                 originalSelectionData: null,
+                dirtySelection: false,
                 pasted: false,
                 pastePoint: Object.assign({}, pastePointStart)
             }
@@ -91,6 +92,7 @@
             touchFunction(e) {
                 this.clearSelection();
                 this.pasted = false;
+                this.dirtySelection = false;
                 let canvas = this.$root.paint.canvas.toolElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -219,13 +221,10 @@
                 this.invertSelectionBorder(false);
             },
             moveDragFunction(e) {
-                if (window.stopme) {
-                    window.stopme = false;
-                    debugger;
-                }
                 let canvas = this.$root.paint.canvas.toolElement;
                 let bounds = canvas.getBoundingClientRect();
                 let initialX, initialY, currentX, currentY;
+                this.dirtySelection = true;
                 if (e.type === 'mousemove') {
                     initialX = this.mouse.initialX;
                     initialY = this.mouse.initialY;
@@ -284,6 +283,7 @@
                 context.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
             },
             updateSelection(transform) {
+                this.dirtySelection = true;
                 if (transform) {
                     this.originalSelectionData = transform(this.originalSelectionData);
                     this.selectionData = new ImageData(
@@ -309,21 +309,23 @@
             clearSelection(semaphore) {
                 if (this.$root.paint.state.selection) {
                     this.invertSelectionBorder(false);
-                    let undoCanvas = this.$root.paint.canvas.undoElement;
-                    let undoContext = this.$root.paint.canvas.undoContext;
-                    undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
-                    if (!this.pasted) {
-                        undoContext.fillStyle = backgroundColor;
-                        undoContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                    if (this.dirtySelection) { // Only commit the drawing for undo if it has been moved or transformed
+                        let undoCanvas = this.$root.paint.canvas.undoElement;
+                        let undoContext = this.$root.paint.canvas.undoContext;
+                        undoContext.clearRect(0, 0, undoCanvas.width, undoCanvas.height);
+                        if (!this.pasted) {
+                            undoContext.fillStyle = backgroundColor;
+                            undoContext.fillRect(this.originalPosition.x, this.originalPosition.y, this.originalPosition.width, this.originalPosition.height);
+                        }
+                        this.setSelectionTransparency();
+                        this.compensateTransparentOverlap();
+                        undoContext.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
+                        this.commitDrawing();
                     }
-                    this.setSelectionTransparency();
-                    this.compensateTransparentOverlap();
-                    undoContext.putImageData(this.selectionData, this.$root.paint.state.selection.x, this.$root.paint.state.selection.y);
                     this.$root.paint.state.selection = null;
                     let canvas = this.$root.paint.canvas.toolElement;
                     let context = this.$root.paint.canvas.toolContext;
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    this.commitDrawing();
                     context = this.$root.paint.canvas.activeContext;
                     canvas = this.$root.paint.canvas.activeElement;
                     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -411,6 +413,7 @@
                         width,
                         height
                     };
+                    this.dirtySelection = true;
                     this.setSelectionTransparency();
                     this.invertSelectionBorder(true);
                     context.putImageData(this.selectionData, x, y);
