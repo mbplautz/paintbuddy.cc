@@ -233,6 +233,7 @@ export default {
                     confirmDialog: false,
                     confirmAction: '',
                     confirmOption: null,
+                    template: null,
                     message: ''
                 },
                 drawing: false,

@@ -25,9 +25,10 @@ new Vue({
         canRedo: false,
         selection: null,
         confirm: {
-          confirmOption: null,
           confirmDialog: false,
           confirmAction: '',
+          confirmOption: null,
+          template: null,
           message: ''
         }
       },
