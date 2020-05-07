@@ -16,6 +16,7 @@
         methods: {
             click() {
                 this.$root.$emit('hide-popup', 'main-menu');
+                this.$root.$emit('show-dialog', 'about-dialog');
             }
         }
     };

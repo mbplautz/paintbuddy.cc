@@ -9,6 +9,7 @@
         <transparent-selection-menu />
 
         <confirm-dialog />
+        <about-dialog />
     </div>
 </template>
 
@@ -21,6 +22,7 @@
     import FilledPolygonMenu from '../menus/filled-polygon-menu.vue';
     import TransparentSelectionMenu from '../menus/transparent-selection-menu.vue';
     import ConfirmDialog from '../dialogs/confirm-dialog.vue';
+    import AboutDialog from '../dialogs/about-dialog.vue';
 
     export default {
         data() {
@@ -34,7 +36,8 @@
             LineWidthMenu,
             FilledPolygonMenu,
             TransparentSelectionMenu,
-            ConfirmDialog
+            ConfirmDialog,
+            AboutDialog
         }
     };
 </script>
