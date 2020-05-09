@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
-                    <span class="version">v 0.9.1</span>
+                    <span class="version">v 0.9.2</span>
                     <span class="author"><em>by Michael Plautz</em></span>
                 </div>
                 <div class="spacer"></div>

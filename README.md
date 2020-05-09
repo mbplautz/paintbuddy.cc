@@ -40,7 +40,7 @@ OK, so just so you know, I wrote this app every night for a while as a side gig.
 ## Prod
 7. To create the build to be used in production, run
 
-    `npm build`
+    `npm run build`
 
 8. All build content will appear in the `dist` directory within the current directory. Copy the `dist` folder to a place where it can be hosted by an active web server
 
