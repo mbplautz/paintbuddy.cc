@@ -1,24 +1,8 @@
 <script>
     import EditButton from '../buttons/edit-button.vue';
-    import Worker from '../../worker/flood-fill.worker.js';
+    import floodFill from '../../module/flood-fill';
 
     const parseColorRegex = /^#?([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})?$/i;
-
-    // So the flood fill is a heavily intensive processing operation for a web browser. Every other
-    // tool that is used can be processed on the event thread because it is relatively so light. So
-    // to improve the fill tool's user experience, and to compensate for the fact that it is often
-    // going to take one or two whole seconds to fill the requested area, there are page covers
-    // that appear when the paint tool is used:
-    //   - a light cover that shows up immediately after the paint operation has started
-    //   - a heavy cover that is more in-your-face and informative that this operation is taking time
-    // The heavy cover only shows up if the operation has taken over a second, as defined by this
-    // number below. If the operation completes before one second, then the user never sees the heavy
-    // cover. This is intended to create a more seemless and less jarring user experience for the fill
-    // tool.
-    const heavyCoverDelay = 1000;
-
-    const worker = new Worker();
-    window.floodFillWorker = worker;
 
     export default {
         props: {
@@ -33,11 +17,14 @@
             return {
                 name: 'fill',
                 icon: 'fas fa-fill-drip',
-                heavyCoverTimeout: 0
+                // heavyCoverTimeout: 0
+                fillUndoArray: [],
+                fillInProgress: false,
+                fillEventQueue: []
             }
         },
         mounted() {
-            worker.onmessage = this.completeFill;
+            // worker.onmessage = this.completeFill;
         },
         extends: EditButton,
         methods: {
@@ -51,6 +38,12 @@
 
             },
             releaseFunction(e) {
+                // We will only do one fill at at time
+                if (this.fillInProgress) {
+                    this.fillEventQueue.push(e);
+                    return;
+                }
+                this.fillInProgress = true;
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -63,61 +56,74 @@
                     x = e.changedTouches[0].clientX - bounds.left;
                     y = e.changedTouches[0].clientY - bounds.top;
                 }
+
                 let context = this.$root.paint.canvas.drawContext;
                 // To avoid unwanted side effects, the fill must only apply to the visible viewport, not the entire canvas
                 let parentDiv = canvas.parentElement;
                 let clientRect = parentDiv.getBoundingClientRect();
-                let imageData = context.getImageData(0, 0, clientRect.width, clientRect.height);
-                let targetOffset = 4 * (y * clientRect.width + x);
-                let target = imageData.data.slice(targetOffset, targetOffset + 4);
-                let parsedColor = this.parseColor(this.$root.paint.options.color);
+                let width = Math.floor(clientRect.width);
+                let height = Math.floor(clientRect.height);
+                let undoCanvas = this.$root.paint.canvas.undoElement;
+                let undoContext = this.$root.paint.canvas.undoContext;
 
-                if(this.toleranceEqual(target, 0, parsedColor, 10)) {
-                    // Trying to fill something which is (essentially) the fill colour
-                    return;
+                // For optimization purposes, we copy the draw canvas to the undo canvas before painting,
+                // draw to the draw canvas, and during the flood fill, we keep track of the *offsets* (but
+                // not their color values) that were painted to, then exit the event.
+                undoContext.drawImage(canvas, 0, 0);
+                let fillColor = this.parseColor(this.$root.paint.options.color);
+                this.fillUndoArray.length = 0;
+                floodFill(context, context, x, y, width, height, fillColor[0], fillColor[1], fillColor[2], fillColor[3] || 255, this.fillUndoArray);
+                if (this.fillUndoArray.length > 0) { 
+                    // This is a reduced version of the usual undo commit
+                    // For performance reasons, we let the event complete before calculating the undo
+                    setTimeout(() => {
+                        let undoData = undoContext.getImageData(0, 0, width, height);
+                        let undoWidth = undoCanvas.width;
+                        let undoMap = {};
+                        let undoDataBinary = undoData.data;
+                        let index;
+                        let offset, mappedOffset, mappedX, mappedY;
+                        let r, g, b, a, val;
+                        for (index = 0; index < this.fillUndoArray.length; index++) {
+                            offset = this.fillUndoArray[index];
+                            r = undoDataBinary[offset];
+                            g = undoDataBinary[offset + 1];
+                            b = undoDataBinary[offset + 2];
+                            a = undoDataBinary[offset + 3];
+                            val = a | (b << 8) | (g << 16) | (r << 24);
+                            if (!undoMap[val]) {
+                                undoMap[val] = [];
+                            }
+                            offset = offset / 4;
+                            mappedX = offset % width;
+                            mappedY = Math.floor(offset / width);
+                            mappedOffset = 4 * (mappedY * undoWidth + mappedX);
+                            undoMap[val].push(mappedOffset);
+                        }
+                        // Since the fillUndoArray wasn't populated in order, we'll need to sort the undo map before we
+                        // try to compress it so we can use ranges where they are found
+                        Object.keys(undoMap).forEach(val => {
+                            undoMap[val].sort();
+                        });
+                        // Now compress the undo map since it is sorted
+                        let compressedUndoMap = this.compressUndoMap(undoMap);
+                        this.$root.paint.state.saveUndoMap(compressedUndoMap);
+                        this.fillInProgress = false;
+                        if (this.fillEventQueue.length > 0) {
+                            setTimeout(() => {
+                                this.releaseFunction(this.fillEventQueue.pop());
+                            }, 0);
+                        }
+                     }, 0);
                 }
-
-                this.showLightPaintCover();
-                this.heavyCoverTimeout = setTimeout(this.showHeavyPaintCover, heavyCoverDelay);
-                // Submit this to the flood fill worker and wait for it to complete this heavy calculation
-                worker.postMessage({
-                    data: imageData.data,
-                    x,
-                    y,
-                    parsedColor,
-                    target,
-                    tolerance: 10,
-                    width: clientRect.width,
-                    height: clientRect.height
-                });
-            },
-            completeFill(oEvent) {
-                let context = this.$root.paint.canvas.undoContext;
-                let canvas = this.$root.paint.canvas.undoElement;
-                let parentDiv = canvas.parentElement;
-                let clientRect = parentDiv.getBoundingClientRect();
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                let imageData = new ImageData(oEvent.data, clientRect.width, clientRect.height);
-                context.putImageData(imageData, 0, 0);
-                this.commitDrawing();
-                clearTimeout(this.heavyCoverTimeout);
-                this.hidePaintCovers();
-            },
-            toleranceEqual(arrayOne, offset, arrayTwo, tolerance) {
-                let length = arrayTwo.length,
-                start = offset + length;
-                
-                tolerance = tolerance || 0;
-                
-                // Iterate (in reverse) the items being compared in each array, checking their values are 
-                // within tolerance of each other
-                while(start-- && length--) {
-                    if(Math.abs(arrayOne[start] - arrayTwo[length]) > tolerance) {
-                        return false;
+                else {
+                    this.fillInProgress = false;
+                    if (this.fillEventQueue.length > 0) {
+                        setTimeout(() => {
+                            this.releaseFunction(this.fillEventQueue.pop());
+                        }, 0);
                     }
                 }
-                
-                return true;
             },
             parseColor(value) {
                 // Try to extract the hex values from the colour string
@@ -136,16 +142,6 @@
                 });
 
                 return parsedColor;
-            },
-            showLightPaintCover() {
-                document.querySelector('div.paint-cover-light').style.zIndex = 5;
-            },
-            showHeavyPaintCover() {
-                document.querySelector('div.paint-cover-heavy').style.zIndex = 5;
-            },
-            hidePaintCovers() {
-                document.querySelector('div.paint-cover-light').style.zIndex = '';
-                document.querySelector('div.paint-cover-heavy').style.zIndex = '';
             }
         }
     }
