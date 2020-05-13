@@ -121,7 +121,7 @@ export default {
                             // 24 bit right shift in a 32-bit word may retain the sign
                             if (r < 0) {
                                 // if so, roll the overflow
-                                r = 255 + r;
+                                r = 256 + r;
                             }
                             let offsetArray = undoMap[key];
                             offsetArray.forEach(offset => {
@@ -179,7 +179,7 @@ export default {
                             // 24 bit right shift in a 32-bit word may retain the sign
                             if (r < 0) {
                                 // if so, roll the overflow
-                                r = 255 + r;
+                                r = 256 + r;
                             }
                             let offsetArray = redoMap[key];
                             offsetArray.forEach(offset => {
