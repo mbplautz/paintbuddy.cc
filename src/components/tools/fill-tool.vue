@@ -17,14 +17,10 @@
             return {
                 name: 'fill',
                 icon: 'fas fa-fill-drip',
-                // heavyCoverTimeout: 0
-                fillUndoArray: [],
-                fillInProgress: false,
-                fillEventQueue: []
+                fillUndoArray: []
             }
         },
         mounted() {
-            // worker.onmessage = this.completeFill;
         },
         extends: EditButton,
         methods: {
@@ -38,12 +34,6 @@
 
             },
             releaseFunction(e) {
-                // We will only do one fill at at time
-                if (this.fillInProgress) {
-                    this.fillEventQueue.push(e);
-                    return;
-                }
-                this.fillInProgress = true;
                 let canvas = this.$root.paint.canvas.drawElement;
                 let bounds = canvas.getBoundingClientRect();
                 let x, y;
@@ -70,22 +60,22 @@
                 // draw to the draw canvas, and during the flood fill, we keep track of the *offsets* (but
                 // not their color values) that were painted to, then exit the event.
                 undoContext.drawImage(canvas, 0, 0);
+                let undoData = undoContext.getImageData(0, 0, width, height);
                 let fillColor = this.parseColor(this.$root.paint.options.color);
-                this.fillUndoArray.length = 0;
-                floodFill(context, context, x, y, width, height, fillColor[0], fillColor[1], fillColor[2], fillColor[3] || 255, this.fillUndoArray);
-                if (this.fillUndoArray.length > 0) { 
+                let undoArray = [];
+                floodFill(context, context, x, y, width, height, fillColor[0], fillColor[1], fillColor[2], fillColor[3] || 255, undoArray);
+                if (undoArray.length > 0) { 
                     // This is a reduced version of the usual undo commit
                     // For performance reasons, we let the event complete before calculating the undo
                     setTimeout(() => {
-                        let undoData = undoContext.getImageData(0, 0, width, height);
                         let undoWidth = undoCanvas.width;
                         let undoMap = {};
                         let undoDataBinary = undoData.data;
                         let index;
                         let offset, mappedOffset, mappedX, mappedY;
                         let r, g, b, a, val;
-                        for (index = 0; index < this.fillUndoArray.length; index++) {
-                            offset = this.fillUndoArray[index];
+                        for (index = 0; index < undoArray.length; index++) {
+                            offset = undoArray[index];
                             r = undoDataBinary[offset];
                             g = undoDataBinary[offset + 1];
                             b = undoDataBinary[offset + 2];
@@ -100,7 +90,7 @@
                             mappedOffset = 4 * (mappedY * undoWidth + mappedX);
                             undoMap[val].push(mappedOffset);
                         }
-                        // Since the fillUndoArray wasn't populated in order, we'll need to sort the undo map before we
+                        // Since the undoArray wasn't populated in order, we'll need to sort the undo map before we
                         // try to compress it so we can use ranges where they are found
                         Object.keys(undoMap).forEach(val => {
                             undoMap[val].sort();
@@ -108,23 +98,14 @@
                         // Now compress the undo map since it is sorted
                         let compressedUndoMap = this.compressUndoMap(undoMap);
                         this.$root.paint.state.saveUndoMap(compressedUndoMap);
-                        this.fillInProgress = false;
-                        if (this.fillEventQueue.length > 0) {
-                            setTimeout(() => {
-                                this.releaseFunction(this.fillEventQueue.pop());
-                            }, 0);
-                        }
                      }, 0);
                 }
-                else {
-                    this.fillInProgress = false;
-                    if (this.fillEventQueue.length > 0) {
-                        setTimeout(() => {
-                            this.releaseFunction(this.fillEventQueue.pop());
-                        }, 0);
-                    }
-                }
             },
+            // Thhis next function is from a flood fill algorithm implementaiton
+            // from https://bl.ocks.org/jon-hall/2fc30039629ef22bc95c
+            // "canvas flood fill implementation and a simple demo app"
+            // Adapted for code consistency
+            // Released under the The MIT License.
             parseColor(value) {
                 // Try to extract the hex values from the colour string
                 let parsed = parseColorRegex.exec(value || '');
