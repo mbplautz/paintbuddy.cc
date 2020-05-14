@@ -34,6 +34,7 @@
                 ['draw', 'active', 'tool'].forEach(canvas => {
                     // Reset each canvas by changing the width to what it already is
                     this.$root.paint.canvas[`${canvas}Element`].width = this.$root.paint.canvas[`${canvas}Element`].width;
+                    this.$root.paint.canvas[`${canvas}Context`].lineCap = 'round';
                 })
                 // Draw the background for the draw canvas
                 context = this.$root.paint.canvas.drawContext;
