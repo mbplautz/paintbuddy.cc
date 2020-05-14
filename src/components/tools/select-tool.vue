@@ -94,7 +94,8 @@
                 this.pasted = false;
                 this.dirtySelection = false;
                 let canvas = this.$root.paint.canvas.toolElement;
-                let bounds = canvas.getBoundingClientRect();
+                let boundsUnrounded = canvas.getBoundingClientRect();
+                let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                 let x, y;
                 if (e.type === 'mousedown') {
                     this.mouse.initialX = e.clientX - bounds.left;
@@ -124,7 +125,8 @@
             },
             dragFunction(e) {
                 let canvas = this.$root.paint.canvas.toolElement;
-                let bounds = canvas.getBoundingClientRect();
+                let boundsUnrounded = canvas.getBoundingClientRect();
+                let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                 let initialX, initialY, currentX, currentY;
                 if (e.type === 'mousemove') {
                     initialX = this.mouse.initialX;
@@ -153,7 +155,8 @@
                 let canvas = this.$root.paint.canvas.toolElement;
                 let initialX, initialY, finalX, finalY;
                 if (e.type === 'mouseup') {
-                    let bounds = canvas.getBoundingClientRect();
+                    let boundsUnrounded = canvas.getBoundingClientRect();
+                    let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                     initialX = this.mouse.initialX;
                     initialY = this.mouse.initialY;
                     finalX = e.clientX - bounds.left;
@@ -202,7 +205,8 @@
             },
             moveTouchFunction(e) {
                 let canvas = this.$root.paint.canvas.toolElement;
-                let bounds = canvas.getBoundingClientRect();
+                let boundsUnrounded = canvas.getBoundingClientRect();
+                let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                 let x, y;
                 if (e.type === 'mousedown') {
                     this.mouse.initialX = e.clientX - bounds.left;
@@ -222,7 +226,8 @@
             },
             moveDragFunction(e) {
                 let canvas = this.$root.paint.canvas.toolElement;
-                let bounds = canvas.getBoundingClientRect();
+                let boundsUnrounded = canvas.getBoundingClientRect();
+                let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                 let initialX, initialY, currentX, currentY;
                 this.dirtySelection = true;
                 if (e.type === 'mousemove') {
@@ -256,7 +261,8 @@
                 let canvas = this.$root.paint.canvas.toolElement;
                 let initialX, initialY, finalX, finalY;
                 if (e.type === 'mouseup') {
-                    let bounds = canvas.getBoundingClientRect();
+                    let boundsUnrounded = canvas.getBoundingClientRect();
+                    let bounds = { left: Math.round(boundsUnrounded.left), top: Math.round(boundsUnrounded.top) };
                     initialX = this.mouse.initialX;
                     initialY = this.mouse.initialY;
                     finalX = e.clientX - bounds.left;
@@ -369,7 +375,8 @@
                     let y2 = y + width;
                     // Use the canvas div size in the window view instead of the actual canvas size for the paste boundaries
                     // Note that the canvas div size can never be larger than the canvases
-                    let canvasDiv = this.$root.paint.canvas.toolElement.parentElement.getBoundingClientRect();
+                    let canvasDivUnrounded = this.$root.paint.canvas.toolElement.parentElement.getBoundingClientRect();
+                    let canvasDiv = { width: Math.round(canvasDivUnrounded.width), height: Math.round(canvasDivUnrounded.height) };
                     let context = this.$root.paint.canvas.toolContext;
                     // Ensure the pasted image doesn't go over off to the side of the canvas
                     if (x2 >= canvasDiv.width) {
