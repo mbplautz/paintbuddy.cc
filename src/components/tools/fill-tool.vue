@@ -63,7 +63,7 @@
                 let undoData = undoContext.getImageData(0, 0, width, height);
                 let fillColor = this.parseColor(this.$root.paint.options.color);
                 let undoArray = [];
-                floodFill(context, context, x, y, width, height, fillColor[0], fillColor[1], fillColor[2], fillColor[3] || 255, undoArray);
+                floodFill(context, context, Math.floor(x), Math.floor(y), width, height, fillColor[0], fillColor[1], fillColor[2], fillColor[3] || 255, undoArray);
                 if (undoArray.length > 0) { 
                     // This is a reduced version of the usual undo commit
                     // For performance reasons, we let the event complete before calculating the undo
