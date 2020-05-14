@@ -16,9 +16,10 @@ import EditButton from '../buttons/edit-button.vue';
                 icon: 'fas fa-paint-brush',
                 mouse: {
                     lastX: 0,
-                    lastY: 0
+                    lastY: 0,
+                    moved: false
                 },
-                touch: {}
+                touch: {},
             }
         },
         extends: EditButton,
@@ -40,6 +41,7 @@ import EditButton from '../buttons/edit-button.vue';
                     context.stroke();
                     this.mouse.lastX = x;
                     this.mouse.lastY = y;
+                    this.mouse.moved = false;
                 }
                 else if (e.type === 'touchstart') {
                     this.touch = {};
@@ -47,7 +49,8 @@ import EditButton from '../buttons/edit-button.vue';
                     Array.prototype.forEach.call(e.touches, touch => {
                         let coordinate = {
                             x: touch.clientX - bounds.left,
-                            y: touch.clientY - bounds.top
+                            y: touch.clientY - bounds.top,
+                            moved: false
                         };
                         context.beginPath();
                         context.moveTo(coordinate.x, coordinate.y);
@@ -70,13 +73,15 @@ import EditButton from '../buttons/edit-button.vue';
                     context.stroke();
                     this.mouse.lastX = x;
                     this.mouse.lastY = y;
+                    this.mouse.moved = true;
                 }
                 else if (e.type === 'touchmove') {
                     let context = this.$root.paint.canvas.activeContext;
                     Array.prototype.forEach.call(e.touches, touch => {
                         let coordinate = {
                             x: touch.clientX - bounds.left,
-                            y: touch.clientY - bounds.top
+                            y: touch.clientY - bounds.top,
+                            moved: true
                         };
                         context.beginPath();
                         context.moveTo(this.touch[touch.identifier].x, this.touch[touch.identifier].y);
@@ -88,6 +93,27 @@ import EditButton from '../buttons/edit-button.vue';
             },
             releaseFunction(e) {
                 console.debug(e);
+                // Check to see if the brush was a touch and a release with no drag
+                // If so, moveTo/lineTo won't draw a dot in the same position, so we'll just draw a circle
+                if (e.type === 'mouseup') {
+                    let context = this.$root.paint.canvas.activeContext;
+                    if (!this.mouse.moved) {
+                        context.beginPath();
+                        context.ellipse(this.mouse.lastX, this.mouse.lastY, this.$root.paint.options.lineWidth / 2, this.$root.paint.options.lineWidth / 2, 0, 0, Math.PI * 2);
+                        context.fill();
+                    }
+                }
+                else if (e.type === 'touchend') {
+                    let context = this.$root.paint.canvas.activeContext;
+                    Array.prototype.forEach.call(e.changedTouches, touch => {
+                        let coordinate = this.touch[touch.identifier];
+                        if (coordinate && !coordinate.moved) {
+                            context.beginPath();
+                            context.ellipse(coordinate.x, coordinate.y, this.$root.paint.options.lineWidth / 2, this.$root.paint.options.lineWidth / 2, 0, 0, Math.PI * 2);
+                            context.fill();
+                        }
+                    });
+                }
                 // For the brush tool, copy what was on the active canvas to the undo canvas
                 let canvas = this.$root.paint.canvas.activeElement;
                 let activeContext = this.$root.paint.canvas.activeContext;
